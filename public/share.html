@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEO Analysis Report - SEO Link Analyzer</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .share-header {
+            text-align: center;
+            padding: 2rem 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2rem;
+        }
+
+        .share-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .share-subtitle {
+            color: var(--text-muted);
+        }
+
+        .share-cta {
+            text-align: center;
+            padding: 3rem 0;
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            margin-top: 2rem;
+        }
+
+        .share-cta h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .share-cta p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="/images/logo.svg" alt="Easy SEO Logo" width="32" height="32" style="display: block;" />
+                    <span class="logo-text">Easy SEO</span>
+                </div>
+                <a href="/" class="btn btn-primary">Create Your Analysis</a>
+            </div>
+        </div>
+    </header>
+
+    <section class="results-section" style="display: block;">
+        <div class="container">
+            <div class="share-header">
+                <h1 class="share-title">Public SEO Report</h1>
+                <p class="share-subtitle">Detailed website analysis</p>
+            </div>
+
+            <!-- SEO Score Card -->
+            <div class="score-card">
+                <div class="score-content">
+                    <div class="score-label">SEO Score</div>
+                    <div class="score-circle">
+                        <svg class="score-ring" width="180" height="180">
+                            <circle class="score-ring-bg" cx="90" cy="90" r="70"></circle>
+                            <circle class="score-ring-fill" cx="90" cy="90" r="70" id="scoreRing"></circle>
+                        </svg>
+                        <div class="score-value" id="scoreValue">...</div>
+                    </div>
+                    <div class="score-rating" id="scoreRating">Loading...</div>
+                </div>
+                <div class="score-details">
+                    <div class="detail-item">
+                        <span class="detail-label">URL:</span>
+                        <span class="detail-value" id="analyzedUrl">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Status:</span>
+                        <span class="detail-value" id="httpStatus">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">TTFB:</span>
+                        <span class="detail-value" id="ttfbTime">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Load Time:</span>
+                        <span class="detail-value" id="loadTime">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analysis Cards Grid -->
+            <div class="analysis-grid">
+                <!-- Title Card -->
+                <div class="analysis-card">
+                    <div class="card-header">
+                        <h3 class="card-title">📝 Title</h3>
+                        <span class="card-badge" id="titleBadge">-</span>
+                    </div>
+                    <div class="card-content">
+                        <p class="card-text" id="titleText">-</p>
+                        <div class="card-meta">
+                            <span id="titleLength">0 characters</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Meta Description Card -->
+                <div class="analysis-card">
+                    <div class="card-header">
+                        <h3 class="card-title">📄 Meta Description</h3>
+                        <span class="card-badge" id="metaBadge">-</span>
+                    </div>
+                    <div class="card-content">
+                        <p class="card-text" id="metaText">-</p>
+                        <div class="card-meta">
+                            <span id="metaLength">0 characters</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Headings Card -->
+                <div class="analysis-card">
+                    <div class="card-header">
+                        <h3 class="card-title">🔤 Headings Structure</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="heading-stats">
+                            <div class="heading-stat">
+                                <span class="heading-label">H1:</span>
+                                <span class="heading-value" id="h1Count">0</span>
+                            </div>
+                            <div class="heading-stat">
+                                <span class="heading-label">H2:</span>
+                                <span class="heading-value" id="h2Count">0</span>
+                            </div>
+                            <div class="heading-stat">
+                                <span class="heading-label">H3:</span>
+                                <span class="heading-value" id="h3Count">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Card -->
+                <div class="analysis-card">
+                    <div class="card-header">
+                        <h3 class="card-title">🔒 Security</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="security-checks">
+                            <div class="check-item" id="httpsCheck">
+                                <span class="check-icon">⏳</span>
+                                <span>HTTPS</span>
+                            </div>
+                            <div class="check-item" id="hstsCheck">
+                                <span class="check-icon">⏳</span>
+                                <span>HSTS Header</span>
+                            </div>
+                            <div class="check-item" id="viewportCheck">
+                                <span class="check-icon">⏳</span>
+                                <span>Mobile Viewport</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Open Graph Card -->
+                <div class="analysis-card">
+                    <div class="card-header">
+                        <h3 class="card-title">🌐 Open Graph</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="og-checks">
+                            <div class="check-item" id="ogTitleCheck">
+                                <span class="check-icon">⏳</span>
+                                <span>og:title</span>
+                            </div>
+                            <div class="check-item" id="ogDescCheck">
+                                <span class="check-icon">⏳</span>
+                                <span>og:description</span>
+                            </div>
+                            <div class="check-item" id="ogImageCheck">
+                                <span class="check-icon">⏳</span>
+                                <span>og:image</span>
+                            </div>
+                            <div class="check-item" id="twitterCheck">
+                                <span class="check-icon">⏳</span>
+                                <span>Twitter Card</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Canonical Card -->
+                <div class="analysis-card">
+                    <div class="card-header">
+                        <h3 class="card-title">🔗 Canonical URL</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="check-item" id="canonicalCheck">
+                            <span class="check-icon">⏳</span>
+                            <span id="canonicalText">Checking...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Warnings and Recommendations -->
+            <div class="feedback-section">
+                <div class="warnings-card">
+                    <h3 class="feedback-title">⚠️ Warnings</h3>
+                    <ul class="feedback-list" id="warningsList"></ul>
+                </div>
+                <div class="recommendations-card">
+                    <h3 class="feedback-title">💡 Recommendations</h3>
+                    <ul class="feedback-list" id="recommendationsList"></ul>
+                </div>
+            </div>
+
+            <!-- CTA Section -->
+            <div class="share-cta">
+                <h2>Want to check your website?</h2>
+                <p>Get a detailed SEO analysis of your website in seconds</p>
+                <a href="/" class="btn btn-primary btn-lg">Analyze My Website</a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Get token from URL
+        const pathParts = window.location.pathname.split('/');
+        const token = pathParts[pathParts.length - 1];
+
+        async function loadPublicAnalysis() {
+            try {
+                const response = await fetch(`/api/public/${token}`);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Analysis not found');
+                }
+
+                displayResults(data);
+            } catch (error) {
+                document.querySelector('.results-section').innerHTML = `
+                    <div class="container" style="text-align: center; padding: 4rem 0;">
+                        <h2 style="font-size: 2rem; margin-bottom: 1rem;">Analysis Not Found</h2>
+                        <p style="color: var(--text-muted); margin-bottom: 2rem;">${error.message}</p>
+                        <a href="/" class="btn btn-primary">Return to Home</a>
+                    </div>
+                `;
+            }
+        }
+
+        function displayResults(result) {
+            // SEO Score
+            const score = result.seo_score || 0;
+            document.getElementById('scoreValue').textContent = score;
+
+            const circumference = 2 * Math.PI * 70;
+            const offset = circumference - (score / 100) * circumference;
+            document.getElementById('scoreRing').style.strokeDashoffset = offset;
+
+            const scoreRating = document.getElementById('scoreRating');
+            if (score >= 80) {
+                scoreRating.textContent = 'Excellent! 🎉';
+                scoreRating.style.color = 'var(--success)';
+            } else if (score >= 60) {
+                scoreRating.textContent = 'Good 👍';
+                scoreRating.style.color = 'var(--warning)';
+            } else {
+                scoreRating.textContent = 'Needs improvement';
+                scoreRating.style.color = 'var(--error)';
+            }
+
+            // Basic details
+            document.getElementById('analyzedUrl').textContent = result.final_url || result.url;
+            document.getElementById('httpStatus').textContent = result.http_status || '-';
+            document.getElementById('ttfbTime').textContent = result.ttfb ? `${result.ttfb}ms` : '-';
+            document.getElementById('loadTime').textContent = result.load_time ? `${result.load_time}ms` : '-';
+
+            // Title
+            const titleText = document.getElementById('titleText');
+            const titleLength = document.getElementById('titleLength');
+            const titleBadge = document.getElementById('titleBadge');
+
+            if (result.title) {
+                titleText.textContent = result.title;
+                titleLength.textContent = `${result.title_length} characters`;
+
+                if (result.title_length >= 30 && result.title_length <= 60) {
+                    titleBadge.textContent = 'Good';
+                    titleBadge.className = 'card-badge good';
+                } else {
+                    titleBadge.textContent = 'Bad';
+                    titleBadge.className = 'card-badge bad';
+                }
+            } else {
+                titleText.textContent = 'Missing';
+                titleBadge.textContent = 'Missing';
+                titleBadge.className = 'card-badge bad';
+            }
+
+            // Meta Description  
+            const metaText = document.getElementById('metaText');
+            const metaLength = document.getElementById('metaLength');
+            const metaBadge = document.getElementById('metaBadge');
+
+            if (result.meta_description) {
+                metaText.textContent = result.meta_description;
+                metaLength.textContent = `${result.meta_description_length} characters`;
+
+                if (result.meta_description_length >= 120 && result.meta_description_length <= 160) {
+                    metaBadge.textContent = 'Good';
+                    metaBadge.className = 'card-badge good';
+                } else {
+                    metaBadge.textContent = 'Bad';
+                    metaBadge.className = 'card-badge bad';
+                }
+            } else {
+                metaText.textContent = 'Missing';
+                metaBadge.textContent = 'Missing';
+                metaBadge.className = 'card-badge bad';
+            }
+
+            // Headings
+            document.getElementById('h1Count').textContent = result.h1_count || 0;
+            document.getElementById('h2Count').textContent = result.h2_count || 0;
+            document.getElementById('h3Count').textContent = result.h3_count || 0;
+
+            // Security checks
+            setCheckStatus('httpsCheck', result.is_https === 1);
+            setCheckStatus('hstsCheck', result.security_headers?.strictTransportSecurity);
+            setCheckStatus('viewportCheck', result.has_viewport === 1);
+
+            // Open Graph - Display actual data
+            const ogTitleCheck = document.getElementById('ogTitleCheck');
+            const ogDescCheck = document.getElementById('ogDescCheck');
+            const ogImageCheck = document.getElementById('ogImageCheck');
+            const twitterCheck = document.getElementById('twitterCheck');
+            
+            if (ogTitleCheck) {
+                if (result.og_title) {
+                    ogTitleCheck.className = 'check-item pass';
+                    ogTitleCheck.innerHTML = `<span>og:title: <strong>${result.og_title}</strong></span>`;
+                } else {
+                    ogTitleCheck.className = 'check-item fail';
+                    ogTitleCheck.innerHTML = '<span>og:title: Missing</span>';
+                }
+            }
+            
+            if (ogDescCheck) {
+                if (result.og_description) {
+                    ogDescCheck.className = 'check-item pass';
+                    const desc = result.og_description.length > 50 ? result.og_description.substring(0, 50) + '...' : result.og_description;
+                    ogDescCheck.innerHTML = `<span>og:description: <strong>${desc}</strong></span>`;
+                } else {
+                    ogDescCheck.className = 'check-item fail';
+                    ogDescCheck.innerHTML = '<span>og:description: Missing</span>';
+                }
+            }
+            
+            if (ogImageCheck) {
+                if (result.og_image) {
+                    ogImageCheck.className = 'check-item pass';
+                    ogImageCheck.innerHTML = `<span>og:image: <strong>${result.og_image.length > 40 ? result.og_image.substring(0, 40) + '...' : result.og_image}</strong></span>`;
+                } else {
+                    ogImageCheck.className = 'check-item fail';
+                    ogImageCheck.innerHTML = '<span>og:image: Missing</span>';
+                }
+            }
+            
+            if (twitterCheck) {
+                if (result.twitter_card) {
+                    twitterCheck.className = 'check-item pass';
+                    twitterCheck.innerHTML = `<span>Twitter Card: <strong>${result.twitter_card}</strong></span>`;
+                } else {
+                    twitterCheck.className = 'check-item fail';
+                    twitterCheck.innerHTML = '<span>Twitter Card: Missing</span>';
+                }
+            }
+
+            // Canonical
+            const canonicalCheck = document.getElementById('canonicalCheck');
+            const canonicalText = document.getElementById('canonicalText');
+
+            if (result.has_canonical === 1) {
+                canonicalCheck.className = 'check-item pass';
+                canonicalText.textContent = result.canonical_url || 'Present';
+            } else {
+                canonicalCheck.className = 'check-item fail';
+                canonicalText.textContent = 'Missing';
+            }
+
+            // Warnings
+            const warningsList = document.getElementById('warningsList');
+            warningsList.innerHTML = '';
+
+            if (result.warnings && result.warnings.length > 0) {
+                result.warnings.forEach(warning => {
+                    const li = document.createElement('li');
+                    li.textContent = warning;
+                    warningsList.appendChild(li);
+                });
+            } else {
+                warningsList.innerHTML = '<li>No warnings! ✨</li>';
+            }
+
+            // Recommendations
+            const recommendationsList = document.getElementById('recommendationsList');
+            recommendationsList.innerHTML = '';
+
+            if (result.recommendations && result.recommendations.length > 0) {
+                result.recommendations.forEach(rec => {
+                    const li = document.createElement('li');
+                    li.textContent = rec;
+                    recommendationsList.appendChild(li);
+                });
+            } else {
+                recommendationsList.innerHTML = '<li>No recommendations! 🎯</li>';
+            }
+
+            // Update meta tags for sharing
+            document.title = `SEO Analysis: ${result.title || result.url} - Easy SEO`;
+            updateMetaTag('description', `SEO Score: ${score}/100. ${result.warnings?.[0] || 'Detailed website analysis'}`);
+            updateMetaTag('og:title', `SEO Analysis: ${result.title || result.url}`);
+            updateMetaTag('og:description', `SEO Score: ${score}/100`);
+        }
+
+        function setCheckStatus(elementId, passed) {
+            const element = document.getElementById(elementId);
+            element.className = passed ? 'check-item pass' : 'check-item fail';
+        }
+
+        function updateMetaTag(name, content) {
+            let tag = document.querySelector(`meta[name="${name}"]`) ||
+                document.querySelector(`meta[property="${name}"]`);
+
+            if (tag) {
+                tag.setAttribute('content', content);
+            }
+        }
+
+        // Load analysis on page load
+        document.addEventListener('DOMContentLoaded', loadPublicAnalysis);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,29 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="faviconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFE135"/>
+      <stop offset="100%" stop-color="#FFC107"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="32" height="32" rx="6" fill="url(#faviconGradient)"/>
+  
+  <!-- Letter E -->
+  <path d="M8 9 L8 23 M8 9 L20 9 M8 16 L17 16 M8 23 L20 23" 
+        stroke="white" 
+        stroke-width="2.5" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"
+        opacity="0.95"/>
+  
+  <!-- Small SEO indicator -->
+  <circle cx="23" cy="11" r="1.8" fill="white" opacity="0.95"/>
+  <path d="M19 16 L23 11 L26 14" 
+        stroke="white" 
+        stroke-width="1.8" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"
+        fill="none"
+        opacity="0.95"/>
+</svg>

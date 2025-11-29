@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate Icons</title>
+</head>
+<body>
+    <h1>Icon Generator for Easy SEO</h1>
+    <p>Use this page to generate PNG icons from SVG. Open browser console and run the script below.</p>
+    
+    <canvas id="canvas" style="display: none;"></canvas>
+    
+    <script>
+        // This is a helper script to generate PNG icons from SVG
+        // You can use online tools like https://realfavicongenerator.net/ or
+        // Use ImageMagick: magick convert favicon.svg -resize 32x32 favicon-32x32.png
+        
+        const sizes = [16, 32, 180, 192, 512];
+        const svgContent = `<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFE135"/>
+      <stop offset="100%" stop-color="#FFC107"/>
+    </linearGradient>
+  </defs>
+  <circle cx="32" cy="32" r="30" fill="url(#logoGradient)"/>
+  <path d="M16 18 L16 46 M16 18 L36 18 M16 32 L30 32 M16 46 L36 46" 
+        stroke="white" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"/>
+  <circle cx="46" cy="22" r="3.5" fill="white" opacity="0.95"/>
+  <path d="M40 30 L46 22 L50 28" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.95"/>
+  <circle cx="50" cy="34" r="2.5" fill="white" opacity="0.95"/>
+</svg>`;
+        
+        console.log('To generate PNG icons, use an online tool like:');
+        console.log('https://realfavicongenerator.net/');
+        console.log('Or use ImageMagick command line:');
+        sizes.forEach(size => {
+            console.log(`magick convert favicon.svg -resize ${size}x${size} favicon-${size}x${size}.png`);
+        });
+    </script>
+</body>
+</html>
+
+

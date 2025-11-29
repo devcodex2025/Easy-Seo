@@ -1,0 +1,15 @@
+node_modules/
+npm-debug.log
+.env
+data/*.sqlite
+data/*.db
+.DS_Store
+*.log
+.vscode/
+.idea/
+dist/
+build/
+coverage/
+.cache/
+temp/
+tmp/
