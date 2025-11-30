@@ -1,29 +1,17 @@
 <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="faviconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FFE135"/>
-      <stop offset="100%" stop-color="#FFC107"/>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
     </linearGradient>
   </defs>
   
-  <!-- Background -->
-  <rect width="32" height="32" rx="6" fill="url(#faviconGradient)"/>
+  <rect width="32" height="32" rx="8" fill="url(#grad)"/>
   
-  <!-- Letter E -->
-  <path d="M8 9 L8 23 M8 9 L20 9 M8 16 L17 16 M8 23 L20 23" 
-        stroke="white" 
-        stroke-width="2.5" 
-        stroke-linecap="round" 
-        stroke-linejoin="round"
-        opacity="0.95"/>
+  <!-- Magnifying Glass -->
+  <path d="M 21 21 L 26 26" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.9"/>
+  <circle cx="15" cy="15" r="7" fill="none" stroke="white" stroke-width="2" opacity="0.9"/>
   
-  <!-- Small SEO indicator -->
-  <circle cx="23" cy="11" r="1.8" fill="white" opacity="0.95"/>
-  <path d="M19 16 L23 11 L26 14" 
-        stroke="white" 
-        stroke-width="1.8" 
-        stroke-linecap="round" 
-        stroke-linejoin="round"
-        fill="none"
-        opacity="0.95"/>
+  <!-- Graph -->
+  <path d="M 11 16 L 13 14 L 15 15 L 17 12" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.8"/>
 </svg>

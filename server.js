@@ -13,6 +13,16 @@ import * as userService from './src/services/user-service.js';
 import * as analysisService from './src/services/analysis-service.js';
 import * as paymentService from './src/services/payment-service.js';
 
+// Helper for URL validation
+const isValidUrl = (string) => {
+    try {
+        new URL(string);
+        return true;
+    } catch (_) {
+        return false;
+    }
+};
+
 dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
@@ -89,6 +99,10 @@ app.post('/api/analyze', async (req, res) => {
 
         if (!url || !userId) {
             return res.status(400).json({ error: 'URL and userId are required' });
+        }
+
+        if (!isValidUrl(url)) {
+            return res.status(400).json({ error: 'Invalid URL format' });
         }
 
         // Get user
@@ -293,3 +307,5 @@ app.listen(PORT, () => {
     console.log(`🚀 SEO Link Analyzer running on http://localhost:${PORT}`);
     console.log(`📊 API available at http://localhost:${PORT}/api`);
 });
+
+export default app;

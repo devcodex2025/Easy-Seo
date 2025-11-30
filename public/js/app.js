@@ -1,5 +1,4 @@
-import { Connection, PublicKey, Transaction } from 'https://unpkg.com/@solana/web3.js@1.98.4';
-import { getAssociatedTokenAddress, createTransferInstruction, TOKEN_PROGRAM_ID } from 'https://unpkg.com/@solana/spl-token@0.4.14';
+// Solana Web3 libraries will be loaded dynamically when needed for payments
 
 // ==================== STATE MANAGEMENT ====================
 const state = {
@@ -147,6 +146,7 @@ async function loadUserInfo() {
         updateCreditsDisplay(user);
     } catch (error) {
         console.error('Error loading user info:', error);
+
         // If user not found (404), create a new guest user
         if ((error.status === 404) || (error.message && error.message.toLowerCase().includes('not found'))) {
             console.log('User not found in database, creating new guest user...');
@@ -159,6 +159,11 @@ async function loadUserInfo() {
                 console.error('Error creating new user:', createError);
                 showNotification('Error creating user. Please refresh the page.', 'error');
             }
+        } else {
+            // Likely server error or connection refused
+            showNotification('Cannot connect to server. Please ensure the backend is running.', 'error');
+            const creditsText = document.getElementById('creditsText');
+            if (creditsText) creditsText.textContent = 'Offline';
         }
     }
 }
@@ -180,7 +185,6 @@ function updateCreditsDisplay(user) {
         creditsText.textContent = `${user.remaining || 0}/${3} today`;
     } else {
         creditsText.textContent = `${user.credits || 0} credits`;
-    }   creditsText.textContent = `${user.credits} credits`;
     }
 }
 
@@ -217,7 +221,7 @@ function setupEventListeners() {
     }
     document.getElementById('closePricing').addEventListener('click', closePricingModal);
     document.getElementById('pricingOverlay').addEventListener('click', closePricingModal);
-    
+
     // Handle static pricing buttons in HTML
     document.querySelectorAll('[data-plan]').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -284,11 +288,17 @@ function setupEventListeners() {
 // ==================== ANALYSIS ====================
 async function performAnalysis() {
     const urlInput = document.getElementById('urlInput');
-    const url = urlInput.value.trim();
+    let url = urlInput.value.trim();
 
     if (!url) {
         showNotification('Please enter a URL', 'warning');
         return;
+    }
+
+    // Add protocol if missing
+    if (!url.match(/^https?:\/\//i)) {
+        url = 'https://' + url;
+        urlInput.value = url;
     }
 
     // Check user limits before starting analysis
@@ -353,12 +363,12 @@ async function performAnalysis() {
     } catch (error) {
         updateProgress(0, 'Analysis failed');
         addLogItem(`Error: ${error.message}`, 'error');
-        
+
         setTimeout(() => {
             loadingContainer.style.display = 'none';
             document.querySelector('.hero').style.display = 'block';
         }, 2000);
-        
+
         // Check if limit exceeded
         if (error.status === 403 || (error.data && error.data.limitExceeded)) {
             showNotification('Analysis limit exceeded. Please upgrade your plan to continue.', 'error');
@@ -367,7 +377,7 @@ async function performAnalysis() {
             }, 1000);
             return;
         }
-        
+
         // If user not found (404), try to create a new user and retry
         if ((error.status === 404) || (error.message && error.message.toLowerCase().includes('user not found'))) {
             console.log('User not found, creating new guest user and retrying...');
@@ -375,7 +385,7 @@ async function performAnalysis() {
                 const newUser = await apiCall('/user/guest', { method: 'POST' });
                 state.userId = newUser.id;
                 localStorage.setItem('userId', newUser.id);
-                
+
                 // Retry analysis with new user
                 showNotification('User recreated, retrying analysis...', 'info');
                 await performAnalysis();
@@ -386,7 +396,7 @@ async function performAnalysis() {
                 return;
             }
         }
-        
+
         showNotification(error.message || 'Analysis error', 'error');
     }
 }
@@ -394,15 +404,15 @@ async function performAnalysis() {
 function updateProgress(percentage, message) {
     const progressFill = document.getElementById('progressFill');
     const progressPercentage = document.getElementById('progressPercentage');
-    
+
     if (progressFill) {
         progressFill.style.width = `${percentage}%`;
     }
-    
+
     if (progressPercentage) {
         progressPercentage.textContent = `${percentage}%`;
     }
-    
+
     if (message) {
         addLogItem(message, percentage === 100 ? 'completed' : 'active');
     }
@@ -415,22 +425,22 @@ function addLogItem(message, status = 'pending') {
     const logItem = document.createElement('div');
     logItem.className = 'log-item';
     logItem.setAttribute('data-status', status);
-    
+
     const icons = {
         pending: '⏳',
         active: '🔄',
         completed: '✅',
         error: '❌'
     };
-    
+
     logItem.innerHTML = `
         <span class="log-icon">${icons[status] || '⏳'}</span>
         <span class="log-text">${message}</span>
     `;
-    
+
     logContainer.appendChild(logItem);
     logContainer.scrollTop = logContainer.scrollHeight;
-    
+
     // Update previous items
     const previousItems = logContainer.querySelectorAll('.log-item[data-status="active"]');
     previousItems.forEach(item => {
@@ -488,7 +498,7 @@ function displayResults(result) {
     const httpStatus = document.getElementById('httpStatus');
     const ttfbTime = document.getElementById('ttfbTime');
     const loadTime = document.getElementById('loadTime');
-    
+
     if (analyzedUrl) analyzedUrl.textContent = result.finalUrl || result.url;
     if (httpStatus) httpStatus.textContent = result.httpStatus || '-';
     if (ttfbTime) ttfbTime.textContent = result.ttfb ? `${result.ttfb}ms` : '-';
@@ -554,7 +564,7 @@ function displayResults(result) {
     const h1Count = document.getElementById('h1Count');
     const h2Count = document.getElementById('h2Count');
     const h3Count = document.getElementById('h3Count');
-    
+
     if (h1Count) h1Count.textContent = result.h1Count || 0;
     if (h2Count) h2Count.textContent = result.h2Count || 0;
     if (h3Count) h3Count.textContent = result.h3Count || 0;
@@ -569,7 +579,7 @@ function displayResults(result) {
     const ogDescCheck = document.getElementById('ogDescCheck');
     const ogImageCheck = document.getElementById('ogImageCheck');
     const twitterCheck = document.getElementById('twitterCheck');
-    
+
     if (ogTitleCheck) {
         if (result.ogTitle) {
             ogTitleCheck.className = 'check-item pass';
@@ -579,7 +589,7 @@ function displayResults(result) {
             ogTitleCheck.innerHTML = '<span>Open Graph Title: Missing</span>';
         }
     }
-    
+
     if (ogDescCheck) {
         if (result.ogDescription) {
             ogDescCheck.className = 'check-item pass';
@@ -590,7 +600,7 @@ function displayResults(result) {
             ogDescCheck.innerHTML = '<span>Open Graph Description: Missing</span>';
         }
     }
-    
+
     if (ogImageCheck) {
         if (result.ogImage) {
             ogImageCheck.className = 'check-item pass';
@@ -600,7 +610,7 @@ function displayResults(result) {
             ogImageCheck.innerHTML = '<span>Open Graph Image: Missing</span>';
         }
     }
-    
+
     if (twitterCheck) {
         if (result.twitterCard) {
             twitterCheck.className = 'check-item pass';
@@ -662,14 +672,14 @@ function setCheckStatus(elementId, passed) {
 // ==================== PRICING MODAL ====================
 function showPricingModal() {
     console.log('showPricingModal called');
-    
+
     const modal = document.getElementById('pricingModal');
     if (!modal) {
         console.error('Pricing modal not found in HTML');
         showNotification('Pricing modal not found', 'error');
         return;
     }
-    
+
     const grid = document.getElementById('pricingGrid');
     if (!grid) {
         console.error('Pricing grid not found in HTML');
@@ -680,7 +690,7 @@ function showPricingModal() {
     // Show modal immediately
     modal.classList.add('active');
     console.log('Modal class added, modal display:', window.getComputedStyle(modal).display);
-    
+
     // Force display in case CSS is not working
     if (window.getComputedStyle(modal).display === 'none') {
         modal.style.display = 'flex';
@@ -731,7 +741,7 @@ function renderPricingCards(grid) {
         `;
 
         const btn = card.querySelector('.btn');
-        
+
         if (key !== 'free') {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -801,7 +811,7 @@ async function showPaymentModal(planKey, plan) {
 
     const paymentPlanName = document.getElementById('paymentPlanName');
     const paymentAmount = document.getElementById('paymentAmount');
-    
+
     if (paymentPlanName) paymentPlanName.textContent = plan.name;
     if (paymentAmount) paymentAmount.textContent = `$${plan.price.toFixed(2)} (${plan.priceUSDC.toFixed(2)} USDC)`;
 
@@ -843,7 +853,7 @@ function closePaymentModal() {
 function copyWalletAddress() {
     const walletAddress = document.getElementById('walletAddress');
     if (!walletAddress) return;
-    
+
     const address = walletAddress.textContent;
     navigator.clipboard.writeText(address);
     showNotification('Address copied!', 'success');
@@ -863,18 +873,15 @@ async function payWithPhantom() {
             if (!connectedWallet) return;
         }
 
+        showNotification('Loading payment libraries...', 'info');
+
+        // Dynamically import Solana libraries
+        const [{ Connection, PublicKey, Transaction }, { getAssociatedTokenAddress, createTransferInstruction, TOKEN_PROGRAM_ID }] = await Promise.all([
+            import('https://unpkg.com/@solana/web3.js@1.98.4/lib/index.esm.js'),
+            import('https://unpkg.com/@solana/spl-token@0.4.14/lib/index.esm.js')
+        ]);
+
         showNotification('Creating transaction...', 'info');
-
-        // Check if Solana Web3.js is loaded
-        if (!window.solanaWeb3 && !window.web3) {
-            showNotification('Solana Web3.js library not loaded. Please refresh the page.', 'error');
-            return;
-        }
-
-        // No longer need to check window.solanaWeb3 or window.web3 directly,
-        // nor manually load SPL Token functions, as they are now imported.
-        // We ensure `Connection`, `PublicKey`, `Transaction` and SPL Token functions are available
-        // via direct ES module imports at the top of the file.
 
 
         // Connect to Solana
@@ -921,7 +928,7 @@ async function payWithPhantom() {
 
         // Serialize transaction
         const serializedTx = signedTx.serialize({ requireAllSignatures: false });
-        
+
         // Convert Uint8Array to base64 (browser-compatible)
         const base64Tx = btoa(String.fromCharCode(...serializedTx));
 
@@ -977,7 +984,7 @@ async function confirmPayment() {
         showNotification('Payment input not found', 'error');
         return;
     }
-    
+
     const txHash = txHashInput.value.trim();
 
     if (!txHash) {
@@ -1182,13 +1189,13 @@ async function exportToPDF() {
 
     try {
         showNotification('Generating PDF...', 'info');
-        
+
         // Check if jsPDF is loaded
         if (!window.jspdf) {
             showNotification('PDF library not loaded. Please refresh the page.', 'error');
             return;
         }
-        
+
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF({
             orientation: 'portrait',
@@ -1206,12 +1213,12 @@ async function exportToPDF() {
         // Header
         doc.setFillColor(...primaryColor);
         doc.rect(0, 0, 210, 40, 'F');
-        
+
         doc.setTextColor(...darkBg);
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(24);
         doc.text('Easy SEO', 20, 25);
-        
+
         doc.setFontSize(12);
         doc.setFont('helvetica', 'normal');
         doc.text('SEO Analysis Report', 20, 32);
@@ -1307,6 +1314,30 @@ async function exportToPDF() {
 
         // Recommendations
         if (state.currentAnalysis.recommendations && state.currentAnalysis.recommendations.length > 0) {
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(33, 150, 243);
+            doc.text('Recommendations:', 20, yPos);
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(9);
+            doc.setTextColor(...mutedColor);
+            state.currentAnalysis.recommendations.slice(0, 5).forEach((rec, i) => {
+                doc.text(`• ${rec}`, 25, yPos + 7 + (i * 5));
+            });
+            yPos += 15 + (Math.min(state.currentAnalysis.recommendations.length, 5) * 5);
+        }
+
+        // Footer
+        doc.setFontSize(8);
+        doc.setTextColor(...mutedColor);
+        doc.text('Generated by Easy SEO', 20, 285);
+        doc.text(new Date().toLocaleDateString(), 170, 285);
+
+        // Save PDF
+        const filename = `seo-analysis-${new Date().getTime()}.pdf`;
+        doc.save(filename);
+        showNotification('PDF exported successfully!', 'success');
+        if (state.currentAnalysis.recommendations && state.currentAnalysis.recommendations.length > 0) {
             if (yPos > 250) {
                 doc.addPage();
                 yPos = 20;
@@ -1336,7 +1367,7 @@ async function exportToPDF() {
         // Save PDF
         const fileName = `easy-seo-analysis-${Date.now()}.pdf`;
         doc.save(fileName);
-        
+
         showNotification('PDF exported successfully!', 'success');
     } catch (error) {
         console.error('PDF export error:', error);
@@ -1413,4 +1444,9 @@ style.textContent = `
 document.head.appendChild(style);
 
 // ==================== START APP ====================
-document.addEventListener('DOMContentLoaded', initializeApp);
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeApp);
+} else {
+    // DOM is already ready, call immediately
+    initializeApp();
+}
