@@ -1,4 +1,6 @@
-// Solana Web3 libraries will be loaded dynamically when needed for payments
+// Solana Web3 libraries
+import { Connection, PublicKey, Transaction } from 'https://esm.sh/@solana/web3.js@1.95.0';
+import { getAssociatedTokenAddress, createTransferInstruction, TOKEN_PROGRAM_ID } from 'https://esm.sh/@solana/spl-token@0.4.0';
 
 // ==================== STATE MANAGEMENT ====================
 const state = {
@@ -12,13 +14,17 @@ const API_BASE = '/api';
 
 async function apiCall(endpoint, options = {}) {
     try {
-        const response = await fetch(`${API_BASE}${endpoint}`, {
-            headers: {
-                'Content-Type': 'application/json',
-                ...options.headers
-            },
-            ...options
-        });
+        const headers = {
+            'Content-Type': 'application/json',
+            ...(options.headers || {})
+        };
+
+        const config = {
+            ...options,
+            headers
+        };
+
+        const response = await fetch(`${API_BASE}${endpoint}`, config);
 
         const data = await response.json();
 
@@ -320,7 +326,7 @@ async function performAnalysis() {
     document.querySelector('.hero').style.display = 'none';
     document.getElementById('resultsSection').style.display = 'none';
     const loadingContainer = document.getElementById('loadingContainer');
-    loadingContainer.style.display = 'block';
+    loadingContainer.style.display = 'flex'; // Changed from 'block' to 'flex' for centering
 
     // Initialize progress
     updateProgress(0, 'Initializing analysis...');
@@ -463,8 +469,13 @@ function displayResults(result) {
     if (result.screenshot) {
         const screenshotCard = document.getElementById('screenshotCard');
         const screenshotImage = document.getElementById('screenshotImage');
+        const addressBar = document.querySelector('.browser-address-bar');
+
         if (screenshotCard && screenshotImage) {
             screenshotImage.src = result.screenshot;
+            if (addressBar) {
+                addressBar.textContent = result.finalUrl || result.url || 'Analyzed Website';
+            }
             screenshotCard.style.display = 'block';
         }
     }
@@ -812,6 +823,9 @@ async function showPaymentModal(planKey, plan) {
     const paymentPlanName = document.getElementById('paymentPlanName');
     const paymentAmount = document.getElementById('paymentAmount');
 
+    const modalTitle = document.getElementById('paymentModalTitle');
+    if (modalTitle) modalTitle.textContent = `Purchase ${plan.name}`;
+
     if (paymentPlanName) paymentPlanName.textContent = plan.name;
     if (paymentAmount) paymentAmount.textContent = `$${plan.price.toFixed(2)} (${plan.priceUSDC.toFixed(2)} USDC)`;
 
@@ -875,11 +889,12 @@ async function payWithPhantom() {
 
         showNotification('Loading payment libraries...', 'info');
 
-        // Dynamically import Solana libraries
-        const [{ Connection, PublicKey, Transaction }, { getAssociatedTokenAddress, createTransferInstruction, TOKEN_PROGRAM_ID }] = await Promise.all([
-            import('https://unpkg.com/@solana/web3.js@1.98.4/lib/index.esm.js'),
-            import('https://unpkg.com/@solana/spl-token@0.4.14/lib/index.esm.js')
-        ]);
+        showNotification('Loading payment libraries...', 'info');
+
+        // Libraries are now imported at the top level
+        if (!Connection || !getAssociatedTokenAddress) {
+            throw new Error('Payment libraries not loaded. Please refresh the page.');
+        }
 
         showNotification('Creating transaction...', 'info');
 
@@ -944,6 +959,17 @@ async function payWithPhantom() {
 
         // Encode as base64 for X-Payment header (browser-compatible)
         const xPaymentHeader = btoa(JSON.stringify(x402Payload));
+
+        // Debug logs
+        console.log('Processing Payment:', {
+            transactionId: currentPaymentQuote.transactionId,
+            userId: state.userId,
+            quote: currentPaymentQuote
+        });
+
+        if (!currentPaymentQuote.transactionId || !state.userId) {
+            throw new Error(`Missing payment details: txId=${currentPaymentQuote.transactionId}, userId=${state.userId}`);
+        }
 
         // Send to server
         showNotification('Verifying payment...', 'info');

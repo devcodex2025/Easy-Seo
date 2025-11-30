@@ -36,12 +36,12 @@ export async function captureScreenshot(url) {
 
         // Navigate to URL with timeout
         await page.goto(url, {
-            waitUntil: 'networkidle0',
-            timeout: 15000,
+            waitUntil: 'domcontentloaded', // Changed from networkidle0 for faster loading
+            timeout: 30000, // Increased from 15000
         });
 
         // Wait a bit for dynamic content
-        await page.waitForTimeout(1000);
+        await page.waitForTimeout(2000); // Increased from 1000
 
         // Take screenshot
         const screenshot = await page.screenshot({

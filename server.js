@@ -252,6 +252,13 @@ app.post('/api/payment/process', paymentLimiter, async (req, res) => {
         const xPaymentHeader = req.header('X-Payment');
         const { transactionId, userId } = req.body;
 
+        console.log('Payment Process Request:', {
+            transactionId,
+            userId,
+            hasHeader: !!xPaymentHeader,
+            body: req.body
+        });
+
         if (!xPaymentHeader) {
             return res.status(400).json({ error: 'X-Payment header is required' });
         }

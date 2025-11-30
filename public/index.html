@@ -12,7 +12,7 @@
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
     <title>Easy SEO - Professional SEO Analysis</title>
-    
+
     <!-- Favicons -->
     <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
     <link rel="alternate icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
@@ -20,16 +20,18 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
     <link rel="manifest" href="/site.webmanifest">
     <meta name="theme-color" content="#667eea">
-    
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
     <!-- jsPDF for PDF export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    
+
     <link rel="stylesheet" href="/css/styles.css">
 </head>
 
@@ -45,18 +47,20 @@
                 <div class="header-actions">
                     <span id="creditsText" class="credits-display">Loading...</span>
                     <button class="btn btn-sm" id="historyBtn">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                            <line x1="16" y1="2" x2="16" y2="6"/>
-                            <line x1="8" y1="2" x2="8" y2="6"/>
-                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                            <line x1="16" y1="2" x2="16" y2="6" />
+                            <line x1="8" y1="2" x2="8" y2="6" />
+                            <line x1="3" y1="10" x2="21" y2="10" />
                         </svg>
                         History
                     </button>
                     <button class="btn btn-sm" id="pricingBtn">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="12" y1="1" x2="12" y2="23"/>
-                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="1" x2="12" y2="23" />
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                         </svg>
                         Pricing
                     </button>
@@ -72,7 +76,7 @@
                 <div class="hero-content">
                     <div class="hero-badge">
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                            <path d="M8 0L10.5 5.5L16 8L10.5 10.5L8 16L5.5 10.5L0 8L5.5 5.5L8 0Z" fill="currentColor"/>
+                            <path d="M8 0L10.5 5.5L16 8L10.5 10.5L8 16L5.5 10.5L0 8L5.5 5.5L8 0Z" fill="currentColor" />
                         </svg>
                         Professional SEO Analysis Tool
                     </div>
@@ -80,9 +84,10 @@
                         Analyze Your Website's <span class="gradient-text">SEO Performance</span>
                     </h1>
                     <p class="hero-description">
-                        Get instant, comprehensive SEO analysis with detailed insights, recommendations, and performance metrics.
+                        Get instant, comprehensive SEO analysis with detailed insights, recommendations, and performance
+                        metrics.
                     </p>
-                    
+
                     <!-- Stats Section -->
                     <div class="stats-section">
                         <div class="stat-item">
@@ -103,13 +108,15 @@
                     <div class="search-container">
                         <div class="input-wrapper">
                             <svg class="input-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                <path d="M19 19l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M19 19l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                             </svg>
                             <input type="text" id="urlInput" placeholder="Enter website URL (e.g., example.com)" />
                         </div>
                         <button class="btn btn-primary btn-lg" id="analyzeBtn">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <polygon points="5 3 19 12 5 21 5 3"/>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="5 3 19 12 5 21 5 3" />
                             </svg>
                             Analyze Now
                         </button>
@@ -125,237 +132,261 @@
                     <h2>Analyzing Website</h2>
                     <div class="progress-percentage" id="progressPercentage">0%</div>
                 </div>
-                
+
                 <div class="progress-bar-container">
                     <div class="progress-bar" id="progressBar">
                         <div class="progress-fill" id="progressFill"></div>
                     </div>
                 </div>
-                
+
                 <div class="analysis-log" id="analysisLog">
                     <div class="log-item" data-status="pending">
                         <span class="log-icon">⏳</span>
                         <span class="log-text">Initializing analysis...</span>
                     </div>
                 </div>
-                
+
                 <div class="loader-spinner"></div>
             </div>
         </div>
 
-    <!-- Results Section -->
-    <section class="results-section" id="resultsSection" style="display: none;">
-        <div class="container">
-            <!-- Screenshot Card -->
-            <div class="screenshot-card neo-extruded" id="screenshotCard" style="display: none; margin-bottom: var(--spacing-xl); border-radius: var(--radius-xl); overflow: hidden;">
-                <img id="screenshotImage" alt="Website Screenshot" style="width: 100%; height: auto; display: block;" />
-            </div>
+        <!-- Results Section -->
+        <section class="results-section" id="resultsSection" style="display: none;">
+            <div class="container">
+                <!-- Screenshot Card -->
+                <div class="screenshot-card neo-extruded" id="screenshotCard"
+                    style="display: none; margin-bottom: var(--spacing-xl); border-radius: var(--radius-xl); overflow: hidden;">
+                    <div class="browser-frame-header">
+                        <div class="browser-dot red"></div>
+                        <div class="browser-dot yellow"></div>
+                        <div class="browser-dot green"></div>
+                        <div class="browser-address-bar"></div>
+                    </div>
+                    <img id="screenshotImage" alt="Website Screenshot"
+                        style="width: 100%; height: auto; display: block;" />
+                </div>
 
-            <!-- Score Card -->
-            <div class="score-card">
-                <div class="score-content">
-                    <div class="score-circle">
-                        <svg viewBox="0 0 200 200" width="180" height="180">
-                            <defs>
-                                <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                    <stop offset="0%" stop-color="#FFE135" />
-                                    <stop offset="100%" stop-color="#FFC107" />
-                                </linearGradient>
-                            </defs>
-                            <circle class="score-ring-bg" cx="100" cy="100" r="90" />
-                            <circle class="score-ring-fill" id="scoreRing" cx="100" cy="100" r="90" />
+                <!-- Score Card -->
+                <div class="score-card">
+                    <div class="score-content">
+                        <div class="score-circle">
+                            <svg viewBox="0 0 200 200" width="180" height="180">
+                                <defs>
+                                    <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" stop-color="#FFE135" />
+                                        <stop offset="100%" stop-color="#FFC107" />
+                                    </linearGradient>
+                                </defs>
+                                <circle class="score-ring-bg" cx="100" cy="100" r="90" />
+                                <circle class="score-ring-fill" id="scoreRing" cx="100" cy="100" r="90" />
+                            </svg>
+                            <div class="score-value" id="scoreValue">0</div>
+                        </div>
+                        <h3>SEO Score</h3>
+                        <p id="scoreRating"
+                            style="margin-top: var(--spacing-xs); font-size: 1.125rem; font-weight: 600;">-</p>
+                    </div>
+                    <div class="score-details">
+                        <div class="detail-item">
+                            <span>URL</span>
+                            <strong id="analyzedUrl"
+                                style="word-break: break-all; text-align: right; max-width: 60%;">-</strong>
+                        </div>
+                        <div class="detail-item">
+                            <span>HTTP Status</span>
+                            <strong id="httpStatus">-</strong>
+                        </div>
+                        <div class="detail-item">
+                            <span>TTFB</span>
+                            <strong id="ttfbTime">-</strong>
+                        </div>
+                        <div class="detail-item">
+                            <span>Load Time</span>
+                            <strong id="loadTime">-</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analysis Grid -->
+                <div class="analysis-grid">
+                    <!-- Title Card -->
+                    <div class="analysis-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    style="display: inline-block; vertical-align: middle; margin-right: 0.5rem;">
+                                    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+                                </svg>
+                                Page Title
+                            </h3>
+                            <span class="card-badge" id="titleBadge">Check</span>
+                        </div>
+                        <div class="card-content">
+                            <p id="titleText" style="font-weight: 600; margin-bottom: var(--spacing-xs);">-</p>
+                            <p id="titleLength" style="color: var(--text-muted); font-size: 0.875rem;">-</p>
+                        </div>
+                    </div>
+
+                    <!-- Meta Description Card -->
+                    <div class="analysis-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    style="display: inline-block; vertical-align: middle; margin-right: 0.5rem;">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                    <polyline points="14 2 14 8 20 8" />
+                                    <line x1="16" y1="13" x2="8" y2="13" />
+                                    <line x1="16" y1="17" x2="8" y2="17" />
+                                    <polyline points="10 9 9 9 8 9" />
+                                </svg>
+                                Meta Description
+                            </h3>
+                            <span class="card-badge" id="metaBadge">Check</span>
+                        </div>
+                        <div class="card-content">
+                            <p id="metaText" style="font-weight: 600; margin-bottom: var(--spacing-xs);">-</p>
+                            <p id="metaLength" style="color: var(--text-muted); font-size: 0.875rem;">-</p>
+                        </div>
+                    </div>
+
+                    <!-- Headings Card -->
+                    <div class="analysis-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    style="display: inline-block; vertical-align: middle; margin-right: 0.5rem;">
+                                    <path d="M4 6h16" />
+                                    <path d="M4 12h16" />
+                                    <path d="M4 18h12" />
+                                </svg>
+                                Headings Structure
+                            </h3>
+                            <span class="card-badge" id="headingsBadge">Check</span>
+                        </div>
+                        <div class="card-content">
+                            <div class="heading-stat">
+                                <span>H1 Tags:</span>
+                                <strong id="h1Count">0</strong>
+                            </div>
+                            <div class="heading-stat">
+                                <span>H2 Tags:</span>
+                                <strong id="h2Count">0</strong>
+                            </div>
+                            <div class="heading-stat">
+                                <span>H3 Tags:</span>
+                                <strong id="h3Count">0</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Technical SEO Card -->
+                    <div class="analysis-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    style="display: inline-block; vertical-align: middle; margin-right: 0.5rem;">
+                                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+                                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+                                </svg>
+                                Technical SEO
+                            </h3>
+                            <span class="card-badge" id="techBadge">Check</span>
+                        </div>
+                        <div class="card-content">
+                            <div class="check-item" id="httpsCheck">
+                                <span>HTTPS</span>
+                            </div>
+                            <div class="check-item" id="hstsCheck">
+                                <span>HSTS Header</span>
+                            </div>
+                            <div class="check-item" id="viewportCheck">
+                                <span>Viewport Meta</span>
+                            </div>
+                            <div class="check-item" id="canonicalCheck">
+                                <span>Canonical URL: <span id="canonicalText">-</span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Social Media Card -->
+                    <div class="analysis-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    style="display: inline-block; vertical-align: middle; margin-right: 0.5rem;">
+                                    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                                </svg>
+                                Social Media
+                            </h3>
+                            <span class="card-badge" id="socialBadge">Check</span>
+                        </div>
+                        <div class="card-content">
+                            <div class="check-item" id="ogTitleCheck">
+                                <span>Open Graph Title</span>
+                            </div>
+                            <div class="check-item" id="ogDescCheck">
+                                <span>Open Graph Description</span>
+                            </div>
+                            <div class="check-item" id="ogImageCheck">
+                                <span>Open Graph Image</span>
+                            </div>
+                            <div class="check-item" id="twitterCheck">
+                                <span>Twitter Card</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feedback Section -->
+                <div class="feedback-section">
+                    <div class="warnings-card" id="warningsCard" style="display: none;">
+                        <h3>⚠️ Warnings</h3>
+                        <ul id="warningsList"></ul>
+                    </div>
+                    <div class="recommendations-card" id="recommendationsCard" style="display: none;">
+                        <h3>💡 Recommendations</h3>
+                        <ul id="recommendationsList"></ul>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="result-actions"
+                    style="text-align: center; margin-top: 2rem; display: flex; gap: var(--spacing-sm); justify-content: center; flex-wrap: wrap;">
+                    <button class="btn btn-secondary" id="shareBtn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                            <polyline points="16 6 12 2 8 6" />
+                            <line x1="12" y1="2" x2="12" y2="15" />
                         </svg>
-                        <div class="score-value" id="scoreValue">0</div>
-                    </div>
-                    <h3>SEO Score</h3>
-                    <p id="scoreRating" style="margin-top: var(--spacing-xs); font-size: 1.125rem; font-weight: 600;">-</p>
-                </div>
-                <div class="score-details">
-                    <div class="detail-item">
-                        <span>URL</span>
-                        <strong id="analyzedUrl" style="word-break: break-all; text-align: right; max-width: 60%;">-</strong>
-                    </div>
-                    <div class="detail-item">
-                        <span>HTTP Status</span>
-                        <strong id="httpStatus">-</strong>
-                    </div>
-                    <div class="detail-item">
-                        <span>TTFB</span>
-                        <strong id="ttfbTime">-</strong>
-                    </div>
-                    <div class="detail-item">
-                        <span>Load Time</span>
-                        <strong id="loadTime">-</strong>
-                    </div>
+                        Share Results
+                    </button>
+                    <button class="btn btn-secondary" id="exportPdfBtn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="7 10 12 15 17 10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                        </svg>
+                        Export PDF
+                    </button>
+                    <button class="btn btn-primary" id="newAnalysisBtn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="8" x2="12" y2="16" />
+                            <line x1="8" y1="12" x2="16" y2="12" />
+                        </svg>
+                        New Analysis
+                    </button>
                 </div>
             </div>
-
-            <!-- Analysis Grid -->
-            <div class="analysis-grid">
-                <!-- Title Card -->
-                <div class="analysis-card">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 0.5rem;">
-                                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
-                            </svg>
-                            Page Title
-                        </h3>
-                        <span class="card-badge" id="titleBadge">Check</span>
-                    </div>
-                    <div class="card-content">
-                        <p id="titleText" style="font-weight: 600; margin-bottom: var(--spacing-xs);">-</p>
-                        <p id="titleLength" style="color: var(--text-muted); font-size: 0.875rem;">-</p>
-                    </div>
-                </div>
-
-                <!-- Meta Description Card -->
-                <div class="analysis-card">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 0.5rem;">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                                <polyline points="14 2 14 8 20 8"/>
-                                <line x1="16" y1="13" x2="8" y2="13"/>
-                                <line x1="16" y1="17" x2="8" y2="17"/>
-                                <polyline points="10 9 9 9 8 9"/>
-                            </svg>
-                            Meta Description
-                        </h3>
-                        <span class="card-badge" id="metaBadge">Check</span>
-                    </div>
-                    <div class="card-content">
-                        <p id="metaText" style="font-weight: 600; margin-bottom: var(--spacing-xs);">-</p>
-                        <p id="metaLength" style="color: var(--text-muted); font-size: 0.875rem;">-</p>
-                    </div>
-                </div>
-
-                <!-- Headings Card -->
-                <div class="analysis-card">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 0.5rem;">
-                                <path d="M4 6h16"/>
-                                <path d="M4 12h16"/>
-                                <path d="M4 18h12"/>
-                            </svg>
-                            Headings Structure
-                        </h3>
-                        <span class="card-badge" id="headingsBadge">Check</span>
-                    </div>
-                    <div class="card-content">
-                        <div class="heading-stat">
-                            <span>H1 Tags:</span>
-                            <strong id="h1Count">0</strong>
-                        </div>
-                        <div class="heading-stat">
-                            <span>H2 Tags:</span>
-                            <strong id="h2Count">0</strong>
-                        </div>
-                        <div class="heading-stat">
-                            <span>H3 Tags:</span>
-                            <strong id="h3Count">0</strong>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Technical SEO Card -->
-                <div class="analysis-card">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 0.5rem;">
-                                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
-                                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
-                            </svg>
-                            Technical SEO
-                        </h3>
-                        <span class="card-badge" id="techBadge">Check</span>
-                    </div>
-                    <div class="card-content">
-                        <div class="check-item" id="httpsCheck">
-                            <span>HTTPS</span>
-                        </div>
-                        <div class="check-item" id="hstsCheck">
-                            <span>HSTS Header</span>
-                        </div>
-                        <div class="check-item" id="viewportCheck">
-                            <span>Viewport Meta</span>
-                        </div>
-                        <div class="check-item" id="canonicalCheck">
-                            <span>Canonical URL: <span id="canonicalText">-</span></span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Social Media Card -->
-                <div class="analysis-card">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 0.5rem;">
-                                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
-                            </svg>
-                            Social Media
-                        </h3>
-                        <span class="card-badge" id="socialBadge">Check</span>
-                    </div>
-                    <div class="card-content">
-                        <div class="check-item" id="ogTitleCheck">
-                            <span>Open Graph Title</span>
-                        </div>
-                        <div class="check-item" id="ogDescCheck">
-                            <span>Open Graph Description</span>
-                        </div>
-                        <div class="check-item" id="ogImageCheck">
-                            <span>Open Graph Image</span>
-                        </div>
-                        <div class="check-item" id="twitterCheck">
-                            <span>Twitter Card</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Feedback Section -->
-            <div class="feedback-section">
-                <div class="warnings-card" id="warningsCard" style="display: none;">
-                    <h3>⚠️ Warnings</h3>
-                    <ul id="warningsList"></ul>
-                </div>
-                <div class="recommendations-card" id="recommendationsCard" style="display: none;">
-                    <h3>💡 Recommendations</h3>
-                    <ul id="recommendationsList"></ul>
-                </div>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="result-actions" style="text-align: center; margin-top: 2rem; display: flex; gap: var(--spacing-sm); justify-content: center; flex-wrap: wrap;">
-                <button class="btn btn-secondary" id="shareBtn">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
-                        <polyline points="16 6 12 2 8 6"/>
-                        <line x1="12" y1="2" x2="12" y2="15"/>
-                    </svg>
-                    Share Results
-                </button>
-                <button class="btn btn-secondary" id="exportPdfBtn">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                        <polyline points="7 10 12 15 17 10"/>
-                        <line x1="12" y1="15" x2="12" y2="3"/>
-                    </svg>
-                    Export PDF
-                </button>
-                <button class="btn btn-primary" id="newAnalysisBtn">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"/>
-                        <line x1="12" y1="8" x2="12" y2="16"/>
-                        <line x1="8" y1="12" x2="16" y2="12"/>
-                    </svg>
-                    New Analysis
-                </button>
-            </div>
-        </div>
-    </section>
+        </section>
     </main>
 
     <!-- Pricing Modal -->
@@ -407,7 +438,7 @@
         <div class="modal-overlay" id="paymentOverlay"></div>
         <div class="modal-content">
             <button class="modal-close" id="closePayment">×</button>
-            <h2 class="modal-title">Payment via x402</h2>
+            <h2 class="modal-title" id="paymentModalTitle">Payment</h2>
 
             <div class="payment-info">
                 <div class="payment-detail">
@@ -471,8 +502,9 @@
         </div>
     </div>
 
-    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script type="module" src="/js/app.js"></script>
-    </body>
+</body>
 
 </html>

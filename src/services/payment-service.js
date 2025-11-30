@@ -128,7 +128,7 @@ export async function verifyAndProcessPayment(xPaymentHeader, transactionId, use
         // 2. Deserialize transaction
         const txBuffer = Buffer.from(paymentData.payload.serializedTransaction, 'base64');
         const tx = Transaction.from(txBuffer);
-        
+
         // Extract signature safely
         if (tx.signatures && tx.signatures.length > 0 && tx.signatures[0]) {
             const sig = tx.signatures[0];
@@ -172,6 +172,13 @@ export async function verifyAndProcessPayment(xPaymentHeader, transactionId, use
             RECIPIENT_WALLET
         );
 
+        console.log('📍 Payment Verification Details:');
+        console.log('   Recipient Wallet:', RECIPIENT_WALLET.toString());
+        console.log('   USDC Mint:', getUSDCMint().toString());
+        console.log('   Expected Recipient Token Account (ATA):', recipientTokenAccount.toString());
+        console.log('   Required Amount:', requiredAmount / 1_000_000, 'USDC');
+
+
         let validTransfer = false;
         let transferAmount = 0;
 
@@ -183,6 +190,9 @@ export async function verifyAndProcessPayment(xPaymentHeader, transactionId, use
 
                     if (ix.keys.length >= 2) {
                         const destAccount = ix.keys[1].pubkey;
+
+                        console.log('   Transaction Destination Account:', destAccount.toString());
+                        console.log('   Accounts Match:', destAccount.equals(recipientTokenAccount));
 
                         if (destAccount.equals(recipientTokenAccount) && transferAmount >= requiredAmount) {
                             validTransfer = true;
