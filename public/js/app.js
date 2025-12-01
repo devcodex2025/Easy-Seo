@@ -615,7 +615,13 @@ function displayResults(result) {
     if (ogImageCheck) {
         if (result.ogImage) {
             ogImageCheck.className = 'check-item pass';
-            ogImageCheck.innerHTML = `<span>Open Graph Image: <strong>${result.ogImage.length > 40 ? result.ogImage.substring(0, 40) + '...' : result.ogImage}</strong></span>`;
+            ogImageCheck.innerHTML = `
+                <div style="display: flex; flex-direction: column; gap: 0.5rem; width: 100%;">
+                    <span>Open Graph Image: <strong style="color: var(--success);">Found</strong></span>
+                    <div style="position: relative; width: 100%; padding-top: 52.25%; background: var(--bg-secondary); border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border);">
+                        <img src="${result.ogImage}" alt="OG Preview" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\'padding: 1rem; text-align: center; color: var(--text-muted);\'>Image failed to load</div>'">
+                    </div>
+                </div>`;
         } else {
             ogImageCheck.className = 'check-item fail';
             ogImageCheck.innerHTML = '<span>Open Graph Image: Missing</span>';
@@ -1218,16 +1224,25 @@ async function exportToPDF() {
 
         // Check if jsPDF is loaded
         if (!window.jspdf) {
+            console.error('jsPDF library not found');
             showNotification('PDF library not loaded. Please refresh the page.', 'error');
             return;
         }
 
         const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({
-            orientation: 'portrait',
-            unit: 'mm',
-            format: 'a4'
-        });
+
+        // Create PDF with error handling
+        let doc;
+        try {
+            doc = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+        } catch (e) {
+            console.error('Error creating jsPDF instance:', e);
+            throw new Error('Failed to initialize PDF generator');
+        }
 
         // Colors
         const primaryColor = [255, 225, 53];
@@ -1387,6 +1402,22 @@ function resetToHome() {
         urlInput.value = '';
     }
     state.currentAnalysis = null;
+
+    // Clear input but keep focus
+    if (urlInput) {
+        urlInput.value = '';
+        urlInput.focus();
+    }
+
+    // Reset progress
+    const progressFill = document.getElementById('progressFill');
+    const progressPercentage = document.getElementById('progressPercentage');
+    const analysisLog = document.getElementById('analysisLog');
+
+    if (progressFill) progressFill.style.width = '0%';
+    if (progressPercentage) progressPercentage.textContent = '0%';
+    if (analysisLog) analysisLog.innerHTML = '';
+
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 

@@ -96,17 +96,28 @@ export async function analyzeSEO(url, includeScreenshot = true) {
         result.h2Count = $('h2').length;
         result.h3Count = $('h3').length;
 
+        // Helper to resolve relative URLs
+        const resolveUrl = (relativeUrl) => {
+            if (!relativeUrl) return null;
+            try {
+                return new URL(relativeUrl, url).href;
+            } catch (e) {
+                return relativeUrl;
+            }
+        };
+
         // Canonical
         const canonical = $('link[rel="canonical"]').attr('href');
         if (canonical) {
             result.hasCanonical = true;
-            result.canonicalUrl = canonical;
+            result.canonicalUrl = resolveUrl(canonical);
         }
 
         // Open Graph tags
         result.ogTitle = $('meta[property="og:title"]').attr('content') || null;
         result.ogDescription = $('meta[property="og:description"]').attr('content') || null;
-        result.ogImage = $('meta[property="og:image"]').attr('content') || null;
+        const ogImage = $('meta[property="og:image"]').attr('content');
+        result.ogImage = resolveUrl(ogImage);
 
         // Twitter Card
         result.twitterCard = $('meta[name="twitter:card"]').attr('content') || null;
