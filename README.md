@@ -1,8 +1,8 @@
-# Easy SEO 🚀
+# Easy SEO
 
 **[easy-seo.tools](https://easy-seo.tools)**
 
-<video src="public/video/easy-seo-showcase.mp4" controls width="100%"></video>
+[🎥 Watch Demo Video](public/video/easy-seo-showcase.mp4)
 
 ## Overview
 
