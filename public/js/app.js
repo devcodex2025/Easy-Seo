@@ -1483,6 +1483,191 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
+// ==================== SHARE RESULTS ====================
+function showShareModal() {
+    if (!currentAnalysis || !currentAnalysis.publicToken) {
+        showNotification('No analysis to share', 'error');
+        return;
+    }
+
+    // Dynamic domain - use easy-seo.tools in production, localhost for development
+    const domain = window.location.hostname === 'localhost'
+        ? 'easy-seo.tools'
+        : window.location.hostname;
+
+    const shareUrl = `https://${domain}/share/${currentAnalysis.publicToken}`;
+
+    // Update share link in modal
+    const shareLinkEl = document.getElementById('shareLink');
+    if (shareLinkEl) {
+        shareLinkEl.value = shareUrl;
+    }
+
+    // Show modal
+    const shareModal = document.getElementById('shareModal');
+    if (shareModal) {
+        shareModal.classList.add('active');
+    }
+}
+
+function closeShareModal() {
+    const shareModal = document.getElementById('shareModal');
+    if (shareModal) {
+        shareModal.classList.remove('active');
+    }
+}
+
+function copyShareLink() {
+    const shareLinkEl = document.getElementById('shareLink');
+    if (shareLinkEl) {
+        shareLinkEl.select();
+        shareLinkEl.setSelectionRange(0, 99999); // For mobile
+
+        navigator.clipboard.writeText(shareLinkEl.value)
+            .then(() => {
+                showNotification('Link copied to clipboard!', 'success');
+            })
+            .catch(err => {
+                console.error('Failed to copy:', err);
+                showNotification('Failed to copy link', 'error');
+            });
+    }
+}
+
+function shareToSocial(platform) {
+    if (!currentAnalysis || !currentAnalysis.publicToken) {
+        showNotification('No analysis to share', 'error');
+        return;
+    }
+
+    const domain = window.location.hostname === 'localhost'
+        ? 'easy-seo.tools'
+        : window.location.hostname;
+
+    const shareUrl = encodeURIComponent(`https://${domain}/share/${currentAnalysis.publicToken}`);
+    const text = encodeURIComponent(`Check out my SEO analysis for ${currentAnalysis.url} - Score: ${currentAnalysis.score}/100`);
+
+    let socialUrl;
+
+    switch (platform) {
+        case 'twitter':
+            socialUrl = `https://twitter.com/intent/tweet?text=${text}&url=${shareUrl}`;
+            break;
+        case 'facebook':
+            socialUrl = `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`;
+            break;
+        case 'linkedin':
+            socialUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`;
+            break;
+        case 'telegram':
+            socialUrl = `https://t.me/share/url?url=${shareUrl}&text=${text}`;
+            break;
+        default:
+            return;
+    }
+
+    window.open(socialUrl, '_blank', 'width=600,height=400');
+}
+
+// ==================== EXPORT PDF ====================
+async function exportToPDF() {
+    try {
+        // Check if jsPDF is loaded
+        if (typeof window.jspdf === 'undefined') {
+            console.error('jsPDF library not loaded');
+            showNotification('PDF library not loaded. Please refresh the page.', 'error');
+            return;
+        }
+
+        showNotification('Generating PDF...', 'info');
+
+        // Get the results section
+        const resultsSection = document.getElementById('resultsSection');
+        if (!resultsSection || !resultsSection.offsetParent) {
+            showNotification('No results to export', 'error');
+            return;
+        }
+
+        // Use html2canvas to capture the results
+        const canvas = await html2canvas(resultsSection, {
+            scale: 2,
+            logging: false,
+            useCORS: true,
+            backgroundColor: '#f7fafc'
+        });
+
+        // Create PDF with jsPDF
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4'
+        });
+
+        // Calculate dimensions to fit on page
+        const imgWidth = 210; // A4 width in mm
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        // Add image to PDF
+        const imgData = canvas.toDataURL('image/png');
+        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+
+        // Generate filename with timestamp
+        const timestamp = new Date().toISOString().split('T')[0];
+        const filename = `SEO-Analysis_${currentAnalysis?.url?.replace(/[^a-z0-9]/gi, '_').substring(0, 30)}_${timestamp}.pdf`;
+
+        // Download PDF
+        pdf.save(filename);
+
+        showNotification('PDF downloaded successfully!', 'success');
+
+    } catch (error) {
+        console.error('PDF export error:', error);
+        showNotification('Failed to generate PDF. Please try again.', 'error');
+    }
+}
+
+// ==================== NEW ANALYSIS ====================
+function resetToHome() {
+    // Clear current analysis
+    currentAnalysis = null;
+
+    // Clear URL input
+    const urlInput = document.getElementById('urlInput');
+    if (urlInput) {
+        urlInput.value = '';
+    }
+
+    // Hide results section
+    const resultsSection = document.getElementById('resultsSection');
+    if (resultsSection) {
+        resultsSection.classList.add('hidden');
+    }
+
+    // Show search section
+    const searchSection = document.querySelector('.search-container');
+    if (searchSection) {
+        searchSection.classList.remove('hidden');
+    }
+
+    // Reset progress
+    const progressBar = document.querySelector('.progress-bar');
+    if (progressBar) {
+        progressBar.style.width = '0%';
+    }
+
+    // Clear analysis log
+    const logContainer = document.getElementById('analysisLog');
+    if (logContainer) {
+        logContainer.innerHTML = '';
+    }
+
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    showNotification('Ready for new analysis', 'success');
+}
+
 // ==================== START APP ====================
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeApp);
