@@ -758,50 +758,6 @@ h6 {
 
 .heading-stat {
     display: flex;
-    justify-content: space-between;
-    padding: var(--spacing-xs) 0;
-    border-bottom: 1px solid var(--bg-card);
-}
-
-.check-item {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-sm);
-    border-radius: var(--radius-sm);
-    transition: var(--transition);
-    flex-wrap: wrap;
-}
-
-.check-item::before {
-    content: '✓';
-    color: var(--success);
-    font-weight: 700;
-    margin-right: var(--spacing-xs);
-    flex-shrink: 0;
-}
-
-.check-item.fail::before {
-    content: '✗';
-    color: var(--error);
-}
-
-.check-item.pass {
-    color: var(--success);
-    background: rgba(72, 187, 120, 0.05);
-}
-
-.check-item.fail {
-    color: var(--text-muted);
-    background: rgba(245, 101, 101, 0.05);
-}
-
-.check-item span {
-    flex: 1;
-    word-break: break-word;
-}
-
-.check-item strong {
     color: var(--text-primary);
     font-weight: 600;
 }

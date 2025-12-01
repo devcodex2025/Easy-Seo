@@ -54,6 +54,45 @@ npm start
 
 ## 🌍 Деплой на Production
 
+### Варіант 0: Vercel (Рекомендовано)
+
+#### 1. Встановіть Vercel CLI
+```bash
+npm i -g vercel
+```
+
+#### 2. Авторизуйтесь
+```bash
+vercel login
+```
+
+#### 3. Деплой
+```bash
+vercel
+```
+- Set up and deploy? [Y/n] y
+- Which scope do you want to deploy to? [Select your scope]
+- Link to existing project? [y/N] n
+- What’s your project’s name? seo-analyzer
+- In which directory is your code located? ./
+- Want to modify these settings? [y/N] n
+
+#### 4. Налаштування змінних оточення (Environment Variables)
+Перейдіть в Dashboard проекту на Vercel -> Settings -> Environment Variables і додайте:
+- `SUPABASE_URL`
+- `SUPABASE_KEY`
+- `X402_WALLET_ADDRESS`
+- `X402_API_KEY`
+- `SOLANA_RPC_MAINNET` (або DEVNET)
+- `SOLANA_CLUSTER`
+
+#### 5. Production Deploy
+```bash
+vercel --prod
+```
+
+---
+
 ### Варіант 1: Heroku (найпростіший)
 
 #### 1. Створіть акаунт на Heroku

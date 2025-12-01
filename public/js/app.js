@@ -273,10 +273,17 @@ function setupEventListeners() {
     document.getElementById('copyShareLink').addEventListener('click', copyShareLink);
 
     // Social share buttons
-    document.getElementById('shareTwitter').addEventListener('click', () => shareToSocial('twitter'));
-    document.getElementById('shareFacebook').addEventListener('click', () => shareToSocial('facebook'));
-    document.getElementById('shareLinkedIn').addEventListener('click', () => shareToSocial('linkedin'));
-    document.getElementById('shareTelegram').addEventListener('click', () => shareToSocial('telegram'));
+    const shareTwitter = document.getElementById('shareTwitter');
+    if (shareTwitter) shareTwitter.addEventListener('click', () => shareToSocial('twitter'));
+
+    const shareFacebook = document.getElementById('shareFacebook');
+    if (shareFacebook) shareFacebook.addEventListener('click', () => shareToSocial('facebook'));
+
+    const shareLinkedIn = document.getElementById('shareLinkedIn');
+    if (shareLinkedIn) shareLinkedIn.addEventListener('click', () => shareToSocial('linkedin'));
+
+    const shareTelegram = document.getElementById('shareTelegram');
+    if (shareTelegram) shareTelegram.addEventListener('click', () => shareToSocial('telegram'));
 
     // Export PDF
     const exportPdfBtn = document.getElementById('exportPdfBtn');
@@ -581,9 +588,9 @@ function displayResults(result) {
     if (h3Count) h3Count.textContent = result.h3Count || 0;
 
     // Security checks
-    setCheckStatus('httpsCheck', result.isHttps);
-    setCheckStatus('hstsCheck', result.securityHeaders?.strictTransportSecurity);
-    setCheckStatus('viewportCheck', result.hasViewport);
+    setCheckStatus('httpsCheck', result.isHttps, 'HTTPS');
+    setCheckStatus('hstsCheck', result.securityHeaders?.strictTransportSecurity, 'HSTS Header');
+    setCheckStatus('viewportCheck', result.hasViewport, 'Viewport Meta');
 
     // Open Graph - Display actual data
     const ogTitleCheck = document.getElementById('ogTitleCheck');
@@ -594,10 +601,10 @@ function displayResults(result) {
     if (ogTitleCheck) {
         if (result.ogTitle) {
             ogTitleCheck.className = 'check-item pass';
-            ogTitleCheck.innerHTML = `<span>Open Graph Title: <strong>${result.ogTitle}</strong></span>`;
+            ogTitleCheck.innerHTML = `<i class="ph-check-circle"></i><span>Open Graph Title: <strong>${result.ogTitle}</strong></span>`;
         } else {
             ogTitleCheck.className = 'check-item fail';
-            ogTitleCheck.innerHTML = '<span>Open Graph Title: Missing</span>';
+            ogTitleCheck.innerHTML = `<i class="ph-x-circle"></i><span>Open Graph Title: Missing</span>`;
         }
     }
 
@@ -605,30 +612,37 @@ function displayResults(result) {
         if (result.ogDescription) {
             ogDescCheck.className = 'check-item pass';
             const desc = result.ogDescription.length > 60 ? result.ogDescription.substring(0, 60) + '...' : result.ogDescription;
-            ogDescCheck.innerHTML = `<span>Open Graph Description: <strong>${desc}</strong></span>`;
+            ogDescCheck.innerHTML = `<i class="ph-check-circle"></i><span>Open Graph Description: <strong>${desc}</strong></span>`;
         } else {
             ogDescCheck.className = 'check-item fail';
-            ogDescCheck.innerHTML = '<span>Open Graph Description: Missing</span>';
+            ogDescCheck.innerHTML = `<i class="ph-x-circle"></i><span>Open Graph Description: Missing</span>`;
         }
     }
 
     if (ogImageCheck) {
         if (result.ogImage) {
             ogImageCheck.className = 'check-item pass';
-            ogImageCheck.innerHTML = `<span>Open Graph Image: <strong>${result.ogImage.length > 40 ? result.ogImage.substring(0, 40) + '...' : result.ogImage}</strong></span>`;
+            ogImageCheck.innerHTML = `
+                <i class="ph-check-circle"></i>
+                <div style="flex: 1;">
+                    <span>Open Graph Image:</span>
+                    <div class="og-image-container" style="margin-top: 0.5rem;">
+                        <img src="${result.ogImage}" alt="Open Graph Preview" style="max-width: 200px; max-height: 150px; border-radius: 8px; border: 1px solid var(--bg-tertiary); object-fit: cover;" onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=\'color:var(--text-muted)\'>Image failed to load</span>'">
+                    </div>
+                </div>`;
         } else {
             ogImageCheck.className = 'check-item fail';
-            ogImageCheck.innerHTML = '<span>Open Graph Image: Missing</span>';
+            ogImageCheck.innerHTML = `<i class="ph-x-circle"></i><span>Open Graph Image: Missing</span>`;
         }
     }
 
     if (twitterCheck) {
         if (result.twitterCard) {
             twitterCheck.className = 'check-item pass';
-            twitterCheck.innerHTML = `<span>Twitter Card: <strong>${result.twitterCard}</strong></span>`;
+            twitterCheck.innerHTML = `<i class="ph-check-circle"></i><span>Twitter Card: <strong>${result.twitterCard}</strong></span>`;
         } else {
             twitterCheck.className = 'check-item fail';
-            twitterCheck.innerHTML = '<span>Twitter Card: Missing</span>';
+            twitterCheck.innerHTML = `<i class="ph-x-circle"></i><span>Twitter Card: Missing</span>`;
         }
     }
 
@@ -639,10 +653,10 @@ function displayResults(result) {
     if (canonicalCheck && canonicalText) {
         if (result.hasCanonical) {
             canonicalCheck.className = 'check-item pass';
-            canonicalText.textContent = result.canonicalUrl || 'Present';
+            canonicalCheck.innerHTML = `<i class="ph-check-circle"></i><span>Canonical URL: <span id="canonicalText">${result.canonicalUrl || 'Present'}</span></span>`;
         } else {
             canonicalCheck.className = 'check-item fail';
-            canonicalText.textContent = 'Missing';
+            canonicalCheck.innerHTML = `<i class="ph-x-circle"></i><span>Canonical URL: <span id="canonicalText">Missing</span></span>`;
         }
     }
 
@@ -675,9 +689,20 @@ function displayResults(result) {
     }
 }
 
-function setCheckStatus(elementId, passed) {
+function setCheckStatus(elementId, passed, label) {
     const element = document.getElementById(elementId);
+    if (!element) return;
+
     element.className = passed ? 'check-item pass' : 'check-item fail';
+    const icon = passed ? '<i class="ph-check-circle"></i>' : '<i class="ph-x-circle"></i>';
+
+    // If label is provided, reconstruct content, otherwise just prepend icon if not present
+    if (label) {
+        element.innerHTML = `${icon}<span>${label}</span>`;
+    } else {
+        // Fallback if we just want to update class but keep content (less robust)
+        // Ideally we should always provide label or reconstruct
+    }
 }
 
 // ==================== PRICING MODAL ====================
@@ -1333,7 +1358,7 @@ async function exportToPDF() {
             doc.setFontSize(9);
             doc.setTextColor(...mutedColor);
             state.currentAnalysis.warnings.slice(0, 5).forEach((warning, i) => {
-                doc.text(`• ${warning}`, 25, yPos + 7 + (i * 5));
+                doc.text(`• ${cleanTextForPDF(warning)}`, 25, yPos + 7 + (i * 5));
             });
             yPos += 15 + (Math.min(state.currentAnalysis.warnings.length, 5) * 5);
         }
@@ -1348,35 +1373,7 @@ async function exportToPDF() {
             doc.setFontSize(9);
             doc.setTextColor(...mutedColor);
             state.currentAnalysis.recommendations.slice(0, 5).forEach((rec, i) => {
-                doc.text(`• ${rec}`, 25, yPos + 7 + (i * 5));
-            });
-            yPos += 15 + (Math.min(state.currentAnalysis.recommendations.length, 5) * 5);
-        }
-
-        // Footer
-        doc.setFontSize(8);
-        doc.setTextColor(...mutedColor);
-        doc.text('Generated by Easy SEO', 20, 285);
-        doc.text(new Date().toLocaleDateString(), 170, 285);
-
-        // Save PDF
-        const filename = `seo-analysis-${new Date().getTime()}.pdf`;
-        doc.save(filename);
-        showNotification('PDF exported successfully!', 'success');
-        if (state.currentAnalysis.recommendations && state.currentAnalysis.recommendations.length > 0) {
-            if (yPos > 250) {
-                doc.addPage();
-                yPos = 20;
-            }
-            doc.setFontSize(12);
-            doc.setFont('helvetica', 'bold');
-            doc.setTextColor(33, 150, 243);
-            doc.text('Recommendations:', 20, yPos);
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(9);
-            doc.setTextColor(...mutedColor);
-            state.currentAnalysis.recommendations.slice(0, 5).forEach((rec, i) => {
-                doc.text(`• ${rec}`, 25, yPos + 7 + (i * 5));
+                doc.text(`• ${cleanTextForPDF(rec)}`, 25, yPos + 7 + (i * 5));
             });
         }
 
@@ -1399,6 +1396,13 @@ async function exportToPDF() {
         console.error('PDF export error:', error);
         showNotification('Error generating PDF. Please try again.', 'error');
     }
+}
+
+function cleanTextForPDF(text) {
+    if (!text) return '';
+    // Aggressive cleaning: keep only ASCII printable characters
+    // This removes all emojis, special symbols, etc. that jsPDF standard fonts can't handle
+    return text.replace(/[^\x20-\x7E]/g, '').trim();
 }
 
 // ==================== UTILITIES ====================

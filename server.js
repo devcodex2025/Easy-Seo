@@ -313,6 +313,7 @@ app.get('/api/stats', async (req, res) => {
 app.listen(PORT, () => {
     console.log(`🚀 SEO Link Analyzer running on http://localhost:${PORT}`);
     console.log(`📊 API available at http://localhost:${PORT}/api`);
+    console.log(`Environment: ${process.env.NODE_ENV}`);
 });
 
 export default app;
