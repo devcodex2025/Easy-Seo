@@ -2,6 +2,8 @@
 
 **[easy-seo.tools](https://easy-seo.tools)**
 
+![Easy SEO Preview](public/images/easy-seo-preview.png)
+
 [🎥 Watch Demo Video](public/video/easy-seo-showcase.mp4)
 
 ## Overview
