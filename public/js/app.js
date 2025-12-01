@@ -267,16 +267,27 @@ function setupEventListeners() {
     document.getElementById('historyOverlay').addEventListener('click', closeHistoryModal);
 
     // Share modal
-    document.getElementById('shareBtn').addEventListener('click', showShareModal);
-    document.getElementById('closeShare').addEventListener('click', closeShareModal);
-    document.getElementById('shareOverlay').addEventListener('click', closeShareModal);
-    document.getElementById('copyShareLink').addEventListener('click', copyShareLink);
+    // Share buttons - check if they exist
+    const shareBtn = document.getElementById('shareBtn');
+    const closeShare = document.getElementById('closeShare');
+    const shareOverlay = document.getElementById('shareOverlay');
+    const copyShareLink = document.getElementById('copyShareLink');
 
-    // Social share buttons
-    document.getElementById('shareTwitter').addEventListener('click', () => shareToSocial('twitter'));
-    document.getElementById('shareFacebook').addEventListener('click', () => shareToSocial('facebook'));
-    document.getElementById('shareLinkedIn').addEventListener('click', () => shareToSocial('linkedin'));
-    document.getElementById('shareTelegram').addEventListener('click', () => shareToSocial('telegram'));
+    if (shareBtn) shareBtn.addEventListener('click', showShareModal);
+    if (closeShare) closeShare.addEventListener('click', closeShareModal);
+    if (shareOverlay) shareOverlay.addEventListener('click', closeShareModal);
+    if (copyShareLink) copyShareLink.addEventListener('click', copyShareLink);
+
+    // Social share buttons - check if they exist
+    const shareTwitter = document.getElementById('shareTwitter');
+    const shareFacebook = document.getElementById('shareFacebook');
+    const shareLinkedIn = document.getElementById('shareLinkedIn');
+    const shareTelegram = document.getElementById('shareTelegram');
+
+    if (shareTwitter) shareTwitter.addEventListener('click', () => shareToSocial('twitter'));
+    if (shareFacebook) shareFacebook.addEventListener('click', () => shareToSocial('facebook'));
+    if (shareLinkedIn) shareLinkedIn.addEventListener('click', () => shareToSocial('linkedin'));
+    if (shareTelegram) shareTelegram.addEventListener('click', () => shareToSocial('telegram'));
 
     // Export PDF
     const exportPdfBtn = document.getElementById('exportPdfBtn');

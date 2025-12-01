@@ -1,0 +1,17 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <rect width="32" height="32" rx="8" fill="url(#grad)"/>
+  
+  <!-- Magnifying Glass -->
+  <path d="M 21 21 L 26 26" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.9"/>
+  <circle cx="15" cy="15" r="7" fill="none" stroke="white" stroke-width="2" opacity="0.9"/>
+  
+  <!-- Graph -->
+  <path d="M 11 16 L 13 14 L 15 15 L 17 12" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.8"/>
+</svg>

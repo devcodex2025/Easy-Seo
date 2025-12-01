@@ -68,24 +68,10 @@ export async function captureScreenshot(url) {
 }
 
 async function fallbackScreenshot(url) {
-    try {
-        // Use a free screenshot API as fallback
-        // You can replace this with your preferred service
-        const apiUrl = `https://api.screenshotmachine.com/?key=demo&url=${encodeURIComponent(url)}&dimension=1280x800&format=png`;
-
-        const response = await axios.get(apiUrl, {
-            responseType: 'arraybuffer',
-            timeout: 10000,
-        });
-
-        const base64 = Buffer.from(response.data, 'binary').toString('base64');
-        return `data:image/png;base64,${base64}`;
-
-    } catch (error) {
-        console.error('Fallback screenshot error:', error);
-        // Return a placeholder image
-        return createPlaceholderImage(url);
-    }
+    console.log('Using fallback screenshot generation for:', url);
+    // Directly return placeholder to avoid "Invalid Key" errors from external APIs
+    // unless a specific API key is configured
+    return createPlaceholderImage(url);
 }
 
 function createPlaceholderImage(url) {
