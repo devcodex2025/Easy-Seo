@@ -1,0 +1,14 @@
+node_modules
+npm-debug.log
+.git
+.gitignore
+.env.local
+.env.example
+*.md
+!README.md
+.vercel
+.vscode
+tests
+*.test.js
+Dockerfile
+docker-compose.yml

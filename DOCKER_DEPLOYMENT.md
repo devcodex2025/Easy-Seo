@@ -1,5 +1,31 @@
 # 🐳 Docker Deployment Guide
 
+## Публікація на Docker Hub
+
+### 1. Авторизація
+```bash
+docker login
+```
+Введіть ваш Docker Hub username та password.
+
+### 2. Тегування образу
+```bash
+# Замініть YOUR_USERNAME на ваш Docker Hub username
+docker tag easy-seo YOUR_USERNAME/easy-seo:2.0.0
+docker tag easy-seo YOUR_USERNAME/easy-seo:latest
+```
+
+### 3. Публікація
+```bash
+docker push YOUR_USERNAME/easy-seo:2.0.0
+docker push YOUR_USERNAME/easy-seo:latest
+```
+
+### 4. Перевірка
+Ваш образ буде доступний на: `https://hub.docker.com/r/YOUR_USERNAME/easy-seo`
+
+---
+
 ## Швидкий старт (Локальне тестування)
 
 ### 1. Побудова Docker образу
