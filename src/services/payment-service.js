@@ -100,7 +100,8 @@ export async function createPaymentQuote(userId, plan) {
             amount: amountSmallestUnits,
             amountUSDC: amountUSDC,
             cluster: SOLANA_CLUSTER,
-            network: SOLANA_CLUSTER === 'mainnet' ? 'solana-mainnet' : 'solana-devnet'
+            network: SOLANA_CLUSTER === 'mainnet' ? 'solana-mainnet' : 'solana-devnet',
+            rpcUrl: RPC_URL
         };
     } catch (error) {
         console.error('Error creating payment quote:', error);

@@ -31,6 +31,9 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Trust proxy for deployments behind reverse proxy (Akash, Railway, etc.)
+app.set('trust proxy', 1);
+
 // Middleware
 app.use(helmet({
     contentSecurityPolicy: false, // Disable for development
@@ -66,6 +69,63 @@ app.post('/api/user/guest', async (req, res) => {
     } catch (error) {
         console.error('Error creating guest user:', error);
         res.status(500).json({ error: 'Failed to create guest user' });
+    }
+});
+
+// Wallet authentication - login or register
+app.post('/api/user/wallet', async (req, res) => {
+    try {
+        const { walletAddress } = req.body;
+
+        if (!walletAddress) {
+            return res.status(400).json({ error: 'Wallet address is required' });
+        }
+
+        const user = await userService.createOrGetWalletUser(walletAddress);
+
+        const canAnalyze = await userService.canUserAnalyze(user);
+
+        res.json({
+            id: user.id,
+            walletAddress: user.wallet_address,
+            plan: user.plan,
+            credits: user.credits,
+            canAnalyze: canAnalyze.allowed,
+            remaining: canAnalyze.remaining,
+            isGuest: user.is_guest
+        });
+    } catch (error) {
+        console.error('Error with wallet authentication:', error);
+        res.status(500).json({ error: 'Failed to authenticate with wallet' });
+    }
+});
+
+// Link wallet to existing guest user
+app.post('/api/user/:userId/link-wallet', async (req, res) => {
+    try {
+        const { walletAddress } = req.body;
+
+        if (!walletAddress) {
+            return res.status(400).json({ error: 'Wallet address is required' });
+        }
+
+        await userService.linkWalletToUser(req.params.userId, walletAddress);
+
+        const user = await userService.getUser(req.params.userId);
+        const canAnalyze = await userService.canUserAnalyze(user);
+
+        res.json({
+            id: user.id,
+            walletAddress: user.wallet_address,
+            plan: user.plan,
+            credits: user.credits,
+            canAnalyze: canAnalyze.allowed,
+            remaining: canAnalyze.remaining,
+            isGuest: user.is_guest
+        });
+    } catch (error) {
+        console.error('Error linking wallet:', error);
+        res.status(500).json({ error: 'Failed to link wallet' });
     }
 });
 

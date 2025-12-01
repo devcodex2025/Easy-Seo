@@ -13,3 +13,4 @@ coverage/
 .cache/
 temp/
 tmp/
+akash-deployment.yml

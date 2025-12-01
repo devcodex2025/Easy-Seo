@@ -10,7 +10,8 @@ const __dirname = path.dirname(__filename);
 const result = dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 if (result.error) {
-    console.log('⚠️  dotenv error:', result.error.message);
+    // console.log('⚠️  dotenv error:', result.error.message);
+    // Expected in Docker as we use --env-file
 }
 
 const supabaseUrl = process.env.SUPABASE_URL;

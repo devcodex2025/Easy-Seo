@@ -58,6 +58,65 @@ export async function getUserByEmail(email) {
     return data;
 }
 
+export async function getUserByWallet(walletAddress) {
+    const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('wallet_address', walletAddress)
+        .single();
+
+    if (error && error.code !== 'PGRST116') {
+        throw error;
+    }
+
+    return data;
+}
+
+export async function createOrGetWalletUser(walletAddress) {
+    // Try to find existing user by wallet
+    let user = await getUserByWallet(walletAddress);
+
+    if (user) {
+        return user;
+    }
+
+    // Create new user with wallet
+    const userId = uuidv4();
+    const now = Date.now();
+    const today = new Date().toISOString().split('T')[0];
+
+    const { data, error } = await supabase
+        .from('users')
+        .insert({
+            id: userId,
+            wallet_address: walletAddress,
+            is_guest: false,
+            credits: FREE_DAILY_LIMIT,
+            plan: 'free',
+            created_at: now,
+            last_analysis_date: today,
+            daily_analysis_count: 0
+        })
+        .select()
+        .single();
+
+    if (error) throw error;
+
+    return data;
+}
+
+export async function linkWalletToUser(userId, walletAddress) {
+    const { error } = await supabase
+        .from('users')
+        .update({
+            wallet_address: walletAddress,
+            is_guest: false
+        })
+        .eq('id', userId);
+
+    if (error) throw error;
+}
+
 export async function updateUserCredits(userId, credits) {
     const { error } = await supabase
         .from('users')
