@@ -19,3 +19,9 @@ Built with a focus on speed and user experience, Easy SEO delivers actionable re
 *   **Database:** Supabase (PostgreSQL)
 *   **Blockchain:** Solana (x402 Payment Protocol)
 *   **Deployment:** Docker, Akash Network
+
+For **Easy SEO**, the most important features are:
+* **Essential:** website analysis, keyword tracking, SEO score reports;
+* **High Priority:** competitor analysis, backlink tracking, performance notifications; 
+* **Optional:** social media insights, AI content suggestions, multi-language support; 
+* **Excluded for Now** advanced enterprise integrations or offline desktop apps in the initial release.
