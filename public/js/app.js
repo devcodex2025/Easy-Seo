@@ -1175,13 +1175,15 @@ async function showShareModal() {
             })
         });
 
-        // Перевіряємо, чи result.shareUrl існує
         if (result.shareUrl) {
-            // Замінюємо будь-який localhost на продакшн-домен
             const url = new URL(result.shareUrl);
-            if (url.hostname === 'localhost' || url.hostname === '127.0.0.1') {
+
+            // Замінюємо localhost або порт на продакшн-домен без порту
+            if (url.hostname === 'localhost' || url.hostname === '127.0.0.1' || url.port) {
                 url.hostname = 'easy-seo.tools';
+                url.port = ''; // прибираємо порт
             }
+
             currentShareUrl = url.toString();
         } else {
             currentShareUrl = "https://easy-seo.tools";
