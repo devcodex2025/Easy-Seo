@@ -1165,7 +1165,6 @@ async function showShareModal() {
     const shareLink = document.getElementById('shareLink');
 
     shareLink.textContent = 'Generating link...';
-
     modal.classList.add('active');
 
     try {
@@ -1176,7 +1175,18 @@ async function showShareModal() {
             })
         });
 
-        currentShareUrl = result.shareUrl;
+        // Перевіряємо, чи result.shareUrl існує
+        if (result.shareUrl) {
+            // Замінюємо будь-який localhost на продакшн-домен
+            const url = new URL(result.shareUrl);
+            if (url.hostname === 'localhost' || url.hostname === '127.0.0.1') {
+                url.hostname = 'easy-seo.tools';
+            }
+            currentShareUrl = url.toString();
+        } else {
+            currentShareUrl = "https://easy-seo.tools";
+        }
+
         shareLink.textContent = currentShareUrl;
 
     } catch (error) {
