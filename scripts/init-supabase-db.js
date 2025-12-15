@@ -22,6 +22,7 @@ async function initDatabase() {
         await client.query(`
       CREATE TABLE IF NOT EXISTS users (
         id TEXT PRIMARY KEY,
+        wallet_address TEXT UNIQUE,
         email TEXT UNIQUE,
         is_guest BOOLEAN DEFAULT true,
         credits INTEGER DEFAULT 3,
@@ -96,7 +97,8 @@ async function initDatabase() {
         await client.query(`CREATE INDEX IF NOT EXISTS idx_analyses_user_id ON analyses(user_id)`);
         await client.query(`CREATE INDEX IF NOT EXISTS idx_analyses_public_token ON analyses(public_token)`);
         await client.query(`CREATE INDEX IF NOT EXISTS idx_transactions_user_id ON transactions(user_id)`);
-        await client.query(`CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)`);
+          await client.query(`CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)`);
+          await client.query(`CREATE INDEX IF NOT EXISTS idx_users_wallet_address ON users(wallet_address)`);
 
         // Unique constraint for transaction signatures (anti-fraud)
         await client.query(`

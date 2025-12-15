@@ -174,6 +174,7 @@ app.post('/api/analyze', async (req, res) => {
         // Check if user can analyze
         const canAnalyze = await userService.canUserAnalyze(user);
         if (!canAnalyze.allowed) {
+            console.warn(`User ${user.id} not allowed to analyze. credits=${user.credits}`);
             return res.status(403).json({
                 error: 'Analysis limit exceeded',
                 message: 'Upgrade your plan to continue analyzing',

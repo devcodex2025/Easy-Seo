@@ -6,8 +6,12 @@ import { getAssociatedTokenAddress, createTransferInstruction, TOKEN_PROGRAM_ID 
 const state = {
     userId: null,
     currentAnalysis: null,
-    pricing: null
+    pricing: null,
+    walletAddress: null
 };
+
+// Track the currently connected wallet address (string) for on-page flows
+let connectedWallet = null;
 
 // ==================== API HELPERS ====================
 const API_BASE = '/api';
@@ -43,91 +47,288 @@ async function apiCall(endpoint, options = {}) {
     }
 }
 
-// ==================== INITIALIZATION ====================
-async function initializeApp() {
-    // Check if user exists in localStorage
-    let userId = localStorage.getItem('userId');
+// Update UI after wallet connection
+function updateUIForWallet(walletAddress, credits) {
+    const connectBtn = document.getElementById('connectWalletBtn');
+    if (connectBtn) connectBtn.style.display = 'none';
 
-    if (!userId) {
-        // Create guest user
-        try {
-            const user = await apiCall('/user/guest', { method: 'POST' });
-            userId = user.id;
-            localStorage.setItem('userId', userId);
-            state.userId = userId;
-        } catch (error) {
-            showNotification('Error creating user', 'error');
+    const walletStatus = document.getElementById('walletStatus');
+    if (walletStatus) walletStatus.style.display = 'flex';
+
+    const shortAddress = walletAddress ? (walletAddress.slice(0, 4) + '...' + walletAddress.slice(-4)) : '';
+    const addrEl = document.getElementById('walletAddressDisplay');
+    if (addrEl) addrEl.textContent = shortAddress;
+
+    const creditsCountEl = document.getElementById('creditsCount');
+    if (creditsCountEl) creditsCountEl.textContent = credits;
+
+    // Hero
+    const heroBtn = document.getElementById('heroConnectBtn');
+    if (heroBtn) heroBtn.style.display = 'none';
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    if (analyzeBtn) analyzeBtn.style.display = 'inline-flex';
+}
+
+async function connectSolanaWallet(silent = false) {
+    if (!window.solana || !window.solana.isPhantom) {
+        if (!silent) window.open('https://phantom.app/', '_blank');
+        if (!silent) showNotification('Please install Phantom Wallet', 'warning');
+        return null;
+    }
+
+    try {
+        const resp = await window.solana.connect({ onlyIfTrusted: silent });
+        const walletAddress = resp.publicKey.toString();
+
+        // Authenticate with backend
+        const user = await apiCall('/user/wallet', {
+            method: 'POST',
+            body: JSON.stringify({ walletAddress })
+        });
+
+        // Update State
+        state.userId = user.id;
+        state.walletAddress = walletAddress;
+        connectedWallet = walletAddress;
+        localStorage.setItem('walletAddress', walletAddress);
+        localStorage.setItem('userId', user.id);
+
+        updateUIForWallet(walletAddress, user.credits);
+
+        if (!silent) showNotification('Wallet connected successfully!', 'success');
+
+        return walletAddress;
+
+    } catch (err) {
+        if (!silent) console.error('Connection error:', err);
+        if (!silent && err.message) showNotification(err.message, 'error');
+        return null;
+    }
+}
+
+// ==================== EVENT LISTENERS ====================
+function setupEventListeners() {
+    // Header Buttons
+    const connectBtn = document.getElementById('connectWalletBtn');
+    if (connectBtn) connectBtn.addEventListener('click', () => connectSolanaWallet(false));
+
+    const heroConnectBtn = document.getElementById('heroConnectBtn');
+    if (heroConnectBtn) heroConnectBtn.addEventListener('click', () => connectSolanaWallet(false));
+
+    const historyBtn = document.getElementById('historyBtn');
+    if (historyBtn) historyBtn.addEventListener('click', async () => {
+        if (!state.userId) {
+            showNotification('Please connect wallet first', 'warning');
             return;
         }
-    } else {
-        state.userId = userId;
-        // Verify user exists in database
-        try {
-            await apiCall(`/user/${userId}`);
-        } catch (error) {
-            // If user doesn't exist (404), create a new one
-            if ((error.status === 404) || (error.message && error.message.toLowerCase().includes('not found'))) {
-                console.log('User from localStorage not found in database, creating new user...');
-                try {
-                    const newUser = await apiCall('/user/guest', { method: 'POST' });
-                    userId = newUser.id;
-                    localStorage.setItem('userId', userId);
-                    state.userId = userId;
-                } catch (createError) {
-                    console.error('Error creating new user:', createError);
-                    showNotification('Error creating user. Please refresh the page.', 'error');
-                    return;
-                }
-            } else {
-                console.error('Error verifying user:', error);
-            }
-        }
-    }
-
-    // Load user info, pricing, and global stats
-    await Promise.all([
-        loadUserInfo(),
-        loadPricing(),
-        loadGlobalStats()
-    ]).catch(error => {
-        console.error('Error during app initialization:', error);
-        showNotification('Failed to load initial data. Please refresh.', 'error');
+        await showHistoryModal();
     });
 
-    // Setup event listeners
-    setupEventListeners();
-}
+    const footerHistoryBtn = document.getElementById('footerHistoryBtn');
+    if (footerHistoryBtn) footerHistoryBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (!state.userId) {
+            showNotification('Please connect wallet first', 'warning');
+            return;
+        }
+        showHistoryModal();
+    });
 
-async function loadGlobalStats() {
+    // Modal closers
+    document.querySelectorAll('.modal-close, .modal-overlay').forEach(el => {
+        el.addEventListener('click', () => {
+            document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
+        });
+    });
+
+    // Pricing & Payment
+    const pricingBtn = document.getElementById('footerPricingBtn'); // Changed ID ref
+    if (pricingBtn) pricingBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        loadPricing();
+        document.getElementById('pricingModal').classList.add('active');
+    });
+
+    // Logo click - return to home
+    const logo = document.querySelector('.logo');
+    if (logo) {
+        logo.style.cursor = 'pointer';
+        logo.addEventListener('click', resetToHome);
+    }
+
+    // Main pricing button (if present)
+    const mainPricingBtn = document.getElementById('pricingBtn');
+    if (mainPricingBtn) {
+        mainPricingBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            showPricingModal();
+        });
+    }
+
+    // Close modals / overlays for pricing
+    const closePricing = document.getElementById('closePricing');
+    const pricingOverlay = document.getElementById('pricingOverlay');
+    if (closePricing) closePricing.addEventListener('click', closePricingModal);
+    if (pricingOverlay) pricingOverlay.addEventListener('click', closePricingModal);
+
+    // Payment modal controls
+    const closePayment = document.getElementById('closePayment');
+    const paymentOverlay = document.getElementById('paymentOverlay');
+    if (closePayment) closePayment.addEventListener('click', closePaymentModal);
+    if (paymentOverlay) paymentOverlay.addEventListener('click', closePaymentModal);
+    const copyAddressBtn = document.getElementById('copyAddress');
+    if (copyAddressBtn) copyAddressBtn.addEventListener('click', copyWalletAddress);
+    const confirmPaymentBtn = document.getElementById('confirmPaymentBtn');
+    if (confirmPaymentBtn) confirmPaymentBtn.addEventListener('click', confirmPayment);
+    const payWithPhantomBtn = document.getElementById('payWithPhantomBtn');
+    if (payWithPhantomBtn) payWithPhantomBtn.addEventListener('click', payWithPhantom);
+
+    // Close history modal
+    const closeHistory = document.getElementById('closeHistory');
+    const historyOverlay = document.getElementById('historyOverlay');
+    if (closeHistory) closeHistory.addEventListener('click', closeHistoryModal);
+    if (historyOverlay) historyOverlay.addEventListener('click', closeHistoryModal);
+
+    // Share modal controls
+    const closeShare = document.getElementById('closeShare');
+    const shareOverlay = document.getElementById('shareOverlay');
+    if (closeShare) closeShare.addEventListener('click', closeShareModal);
+    if (shareOverlay) shareOverlay.addEventListener('click', closeShareModal);
+
+    // Buy Buttons
+    document.querySelectorAll('[data-plan]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            if (!state.userId) {
+                showNotification('Please connect wallet first', 'warning');
+                document.getElementById('pricingModal').classList.remove('active');
+                return;
+            }
+            const plan = e.target.dataset.plan;
+            initiatePayment(plan);
+        });
+    });
+
+    // Analyze Button
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    if (analyzeBtn) analyzeBtn.addEventListener('click', performAnalysis);
+
+    const urlInput = document.getElementById('urlInput');
+    if (urlInput) {
+        urlInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') performAnalysis();
+        });
+    }
+
+    // Results Actions
+    const newAnalysisBtn = document.getElementById('newAnalysisBtn');
+    if (newAnalysisBtn) newAnalysisBtn.addEventListener('click', resetToHome);
+
+    const shareBtn = document.getElementById('shareBtn');
+    if (shareBtn) shareBtn.addEventListener('click', showShareModal);
+
+    const exportPdfBtn = document.getElementById('exportPdfBtn');
+    if (exportPdfBtn) exportPdfBtn.addEventListener('click', exportToPDF);
+
+    // Share Modal
+    const copyShareLinkBtn = document.getElementById('copyShareLink');
+    if (copyShareLinkBtn) copyShareLinkBtn.addEventListener('click', copyShareLink);
+
+    ['twitter', 'facebook', 'linkedin', 'telegram'].forEach(platform => {
+        const btn = document.getElementById(`share${platform.charAt(0).toUpperCase() + platform.slice(1)}`);
+        if (btn) btn.addEventListener('click', () => shareToSocial(platform));
+    });
+
+    // Payment Modal
+    const payPhantomBtn = document.getElementById('payWithPhantomBtn');
+    if (payPhantomBtn) payPhantomBtn.addEventListener('click', processPhantomPayment);
+
+} // End setupEventListeners
+
+// Initialize app: setup listeners, try silent wallet connect, load user and stats
+async function initializeApp() {
     try {
-        const stats = await apiCall('/stats');
+        setupEventListeners();
 
-        // Animate numbers
-        const statAnalysesEl = document.getElementById('statAnalyses');
-        if (statAnalysesEl) {
-            animateValue('statAnalyses', 0, stats.totalAnalyses || 0, 2000);
+        // Restore cached userId/wallet if present
+        const cachedUserId = localStorage.getItem('userId');
+        const cachedWallet = localStorage.getItem('walletAddress');
+        if (cachedUserId) {
+            state.userId = cachedUserId;
+            // Try to refresh user info silently
+            try { await loadUserInfo(); } catch (e) { /* ignore */ }
+        }
+        if (cachedWallet) {
+            connectedWallet = cachedWallet;
+            state.walletAddress = cachedWallet;
         }
 
-        // Format time (e.g., 1200ms -> 1.2s)
-        const statTimeEl = document.getElementById('statTime');
-        if (statTimeEl) {
-            const timeValue = stats.avgLoadTime || 0;
-            const timeDisplay = timeValue < 1000
-                ? `${timeValue}ms`
-                : `${(timeValue / 1000).toFixed(1)}s`;
-            statTimeEl.textContent = timeDisplay;
-        }
+        fetchAndSetStats();
 
-        // Update accuracy/score
-        const statScoreEl = document.getElementById('statScore');
-        if (statScoreEl) {
-            statScoreEl.textContent = `${stats.avgScore || 0}%`;
-        }
+        // If Phantom provider present, listen for connect/disconnect events
+        if (window.solana && window.solana.isPhantom) {
+            window.solana.on('connect', (pk) => {
+                const addr = pk?.toString ? pk.toString() : pk;
+                connectedWallet = addr;
+                // Refresh UI from server
+                loadUserInfo();
+                showNotification('Wallet connected', 'success');
+            });
 
-    } catch (error) {
-        console.error('Error loading stats:', error);
+            window.solana.on('disconnect', () => {
+                connectedWallet = null;
+                state.walletAddress = null;
+                localStorage.removeItem('walletAddress');
+                showNotification('Wallet disconnected', 'warning');
+                // Reset UI
+                document.getElementById('walletStatus')?.style && (document.getElementById('walletStatus').style.display = 'none');
+                document.getElementById('connectWalletBtn')?.style && (document.getElementById('connectWalletBtn').style.display = 'inline-flex');
+            });
+
+            // Try to silently connect if wallet was previously stored
+            const cached = localStorage.getItem('walletAddress');
+            if (cached) {
+                await connectSolanaWallet(true);
+            }
+        }
+    } catch (err) {
+        console.error('Initialization error:', err);
     }
 }
+
+// Fetch global stats from server and update UI
+async function fetchAndSetStats() {
+    try {
+        const res = await fetch('/api/stats');
+        if (!res.ok) throw new Error('Stats fetch failed');
+        const data = await res.json();
+
+        // Total analyses (animate)
+        const total = data.totalAnalyses || 0;
+        const statAnalysesEl = document.getElementById('statAnalyses');
+        if (statAnalysesEl) animateValue('statAnalyses', 0, total, 2000);
+
+        // Avg load time
+        const statTimeEl = document.getElementById('statTime');
+        if (statTimeEl) {
+            const timeValue = data.avgLoadTime || 0;
+            statTimeEl.textContent = timeValue < 1000 ? `${timeValue}ms` : `${(timeValue / 1000).toFixed(1)}s`;
+        }
+
+        // Avg score
+        const statScoreEl = document.getElementById('statScore');
+        if (statScoreEl) statScoreEl.textContent = `${data.avgScore || 0}%`;
+
+    } catch (err) {
+        console.error('Failed to load stats:', err);
+        const statAnalysesEl = document.getElementById('statAnalyses'); if (statAnalysesEl) statAnalysesEl.textContent = '-';
+        const statTimeEl = document.getElementById('statTime'); if (statTimeEl) statTimeEl.textContent = '-';
+        const statScoreEl = document.getElementById('statScore'); if (statScoreEl) statScoreEl.textContent = '-';
+    }
+}
+
+// Load stats once on startup
+fetchAndSetStats();
 
 function animateValue(id, start, end, duration) {
     if (start === end) return;
@@ -168,8 +369,6 @@ async function loadUserInfo() {
         } else {
             // Likely server error or connection refused
             showNotification('Cannot connect to server. Please ensure the backend is running.', 'error');
-            const creditsText = document.getElementById('creditsText');
-            if (creditsText) creditsText.textContent = 'Offline';
         }
     }
 }
@@ -183,133 +382,39 @@ async function loadPricing() {
 }
 
 function updateCreditsDisplay(user) {
-    const creditsText = document.getElementById('creditsText');
-    if (!creditsText) return; // Element might not exist in HTML
+    const creditsCountEl = document.getElementById('creditsCount');
+    if (!creditsCountEl) return;
+
     if (user.plan === 'unlimited') {
-        creditsText.textContent = 'Unlimited';
-    } else if (user.plan === 'free') {
-        creditsText.textContent = `${user.remaining || 0}/${3} today`;
+        creditsCountEl.textContent = '∞';
+    } else if (typeof user.remaining !== 'undefined') {
+        creditsCountEl.textContent = user.remaining;
     } else {
-        creditsText.textContent = `${user.credits || 0} credits`;
+        creditsCountEl.textContent = user.credits || 0;
     }
 }
 
-// ==================== EVENT LISTENERS ====================
-function setupEventListeners() {
-    // Logo click - return to home
-    const logo = document.querySelector('.logo');
-    if (logo) {
-        logo.style.cursor = 'pointer';
-        logo.addEventListener('click', resetToHome);
-    }
 
-    // Analyze button
-    document.getElementById('analyzeBtn').addEventListener('click', performAnalysis);
-
-    // Enter key in URL input
-    document.getElementById('urlInput').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            performAnalysis();
-        }
-    });
-
-    // Pricing modal
-    const pricingBtn = document.getElementById('pricingBtn');
-    if (pricingBtn) {
-        pricingBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('Pricing button clicked');
-            showPricingModal();
-        });
-    } else {
-        console.error('Pricing button not found!');
-    }
-    document.getElementById('closePricing').addEventListener('click', closePricingModal);
-    document.getElementById('pricingOverlay').addEventListener('click', closePricingModal);
-
-    // Handle static pricing buttons in HTML
-    document.querySelectorAll('[data-plan]').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            const planKey = btn.getAttribute('data-plan');
-            if (state.pricing && state.pricing[planKey]) {
-                closePricingModal();
-                showPaymentModal(planKey, state.pricing[planKey]);
-            } else {
-                showPricingModal();
-            }
-        });
-    });
-
-    // Payment modal
-    document.getElementById('closePayment').addEventListener('click', closePaymentModal);
-    document.getElementById('paymentOverlay').addEventListener('click', closePaymentModal);
-    const copyAddressBtn = document.getElementById('copyAddress');
-    if (copyAddressBtn) {
-        copyAddressBtn.addEventListener('click', copyWalletAddress);
-    }
-    const confirmPaymentBtn = document.getElementById('confirmPaymentBtn');
-    if (confirmPaymentBtn) {
-        confirmPaymentBtn.addEventListener('click', confirmPayment);
-    }
-    const payWithPhantomBtn = document.getElementById('payWithPhantomBtn');
-    if (payWithPhantomBtn) {
-        payWithPhantomBtn.addEventListener('click', payWithPhantom);
-    }
-
-    // History modal
-    const historyBtn = document.getElementById('historyBtn');
-    if (historyBtn) {
-        historyBtn.addEventListener('click', showHistoryModal);
-    }
-    document.getElementById('closeHistory').addEventListener('click', closeHistoryModal);
-    document.getElementById('historyOverlay').addEventListener('click', closeHistoryModal);
-
-    // Share modal
-    // Share buttons - check if they exist
-    const shareBtn = document.getElementById('shareBtn');
-    const closeShare = document.getElementById('closeShare');
-    const shareOverlay = document.getElementById('shareOverlay');
-    const copyShareLink = document.getElementById('copyShareLink');
-
-    if (shareBtn) shareBtn.addEventListener('click', showShareModal);
-    if (closeShare) closeShare.addEventListener('click', closeShareModal);
-    if (shareOverlay) shareOverlay.addEventListener('click', closeShareModal);
-    if (copyShareLink) copyShareLink.addEventListener('click', copyShareLink);
-
-    // Social share buttons - check if they exist
-    const shareTwitter = document.getElementById('shareTwitter');
-    const shareFacebook = document.getElementById('shareFacebook');
-    const shareLinkedIn = document.getElementById('shareLinkedIn');
-    const shareTelegram = document.getElementById('shareTelegram');
-
-    if (shareTwitter) shareTwitter.addEventListener('click', () => shareToSocial('twitter'));
-    if (shareFacebook) shareFacebook.addEventListener('click', () => shareToSocial('facebook'));
-    if (shareLinkedIn) shareLinkedIn.addEventListener('click', () => shareToSocial('linkedin'));
-    if (shareTelegram) shareTelegram.addEventListener('click', () => shareToSocial('telegram'));
-
-    // Export PDF
-    const exportPdfBtn = document.getElementById('exportPdfBtn');
-    if (exportPdfBtn) {
-        exportPdfBtn.addEventListener('click', exportToPDF);
-    }
-
-    // New analysis
-    const newAnalysisBtn = document.getElementById('newAnalysisBtn');
-    if (newAnalysisBtn) {
-        newAnalysisBtn.addEventListener('click', resetToHome);
-    }
-}
 
 // ==================== ANALYSIS ====================
 async function performAnalysis() {
+    console.log('performAnalysis called');
     const urlInput = document.getElementById('urlInput');
     let url = urlInput.value.trim();
 
     if (!url) {
         showNotification('Please enter a URL', 'warning');
         return;
+    }
+
+    // Ensure we have a userId (wallet-authenticated). Try silent reconnect if missing.
+    if (!state.userId) {
+        showNotification('Reconnecting wallet...', 'info');
+        await connectSolanaWallet(true);
+        if (!state.userId) {
+            showNotification('Please connect your wallet to start an analysis', 'error');
+            return;
+        }
     }
 
     // Add protocol if missing
@@ -344,6 +449,7 @@ async function performAnalysis() {
     addLogItem('Initializing analysis...', 'pending');
 
     try {
+        showNotification('Starting analysis...', 'info');
         // Simulate progress steps
         await simulateProgress([
             { progress: 10, message: 'Connecting to server...', delay: 300 },
@@ -374,6 +480,8 @@ async function performAnalysis() {
             document.getElementById('resultsSection').style.display = 'block';
             displayResults(result);
             loadUserInfo();
+            // Refresh global stats after a new analysis
+            try { fetchAndSetStats(); } catch (e) { /* ignore */ }
             document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
         }, 500);
 
@@ -483,6 +591,17 @@ function displayResults(result) {
         const addressBar = document.querySelector('.browser-address-bar');
 
         if (screenshotCard && screenshotImage) {
+            console.log('Applying screenshot, length:', result.screenshot ? result.screenshot.length : 0);
+            screenshotImage.onerror = (e) => {
+                console.error('Screenshot image failed to load', e);
+                screenshotImage.style.display = 'none';
+                const placeholder = document.createElement('div');
+                placeholder.style.padding = '2rem';
+                placeholder.style.textAlign = 'center';
+                placeholder.style.color = 'var(--text-muted)';
+                placeholder.textContent = 'Screenshot failed to load';
+                screenshotCard.appendChild(placeholder);
+            };
             screenshotImage.src = result.screenshot;
             if (addressBar) {
                 addressBar.textContent = result.finalUrl || result.url || 'Analyzed Website';
@@ -791,41 +910,7 @@ function closePricingModal() {
     document.getElementById('pricingModal').classList.remove('active');
 }
 
-// ==================== WALLET CONNECTION ====================
-let connectedWallet = null;
-
-async function connectSolanaWallet() {
-    try {
-        // Check if Phantom/Solflare is installed
-        if (!window.solana) {
-            showNotification('Please install Phantom wallet', 'warning');
-            window.open('https://phantom.app/', '_blank');
-            return null;
-        }
-
-        // Connect wallet
-        const response = await window.solana.connect();
-        connectedWallet = response.publicKey.toString();
-
-        showNotification('Wallet connected! 🎉', 'success');
-        updateWalletUI(connectedWallet);
-
-        return connectedWallet;
-    } catch (error) {
-        console.error('Wallet connection error:', error);
-        showNotification('Failed to connect wallet', 'error');
-        return null;
-    }
-}
-
-function updateWalletUI(walletAddress) {
-    // Update header wallet display (if you have such element)
-    const walletBtn = document.getElementById('walletBtn');
-    if (walletBtn && walletAddress) {
-        walletBtn.textContent = `${walletAddress.slice(0, 4)}...${walletAddress.slice(-4)}`;
-        walletBtn.classList.add('connected');
-    }
-}
+// Wallet connection handled by server-aware `connectSolanaWallet` above
 
 // ==================== PAYMENT MODAL ====================
 let currentPaymentQuote = null;

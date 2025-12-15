@@ -64,3 +64,4 @@ inkscape favicon.svg --export-type=png --export-width=512 --export-filename=favi
 
 
 
+

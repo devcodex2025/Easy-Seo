@@ -1,6 +1,6 @@
 {
     "name": "seo-link-analyzer",
-    "version": "2.0.0",
+    "version": "1.0.8-beta",
     "description": "Professional SEO Link Analyzer with x402 Web3 cryptocurrency integration",
     "main": "server.js",
     "type": "module",

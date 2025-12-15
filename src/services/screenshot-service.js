@@ -1,5 +1,5 @@
 import puppeteer from 'puppeteer-core';
-import chromium from '@sparticuz/chromium';
+// import chromium from '@sparticuz/chromium'; // Not used in standard Docker env
 import axios from 'axios';
 
 // For local development, you might need to install Chrome locally
@@ -15,13 +15,20 @@ export async function captureScreenshot(url) {
         }
 
         // Launch browser
+        // Use system Chromium if available (defined in Dockerfile ENV), otherwise let Puppeteer decide (local)
+        const executablePath = process.env.PUPPETEER_EXECUTABLE_PATH || undefined;
+
         browser = await puppeteer.launch({
-            args: isDev ? puppeteer.defaultArgs() : chromium.args,
-            defaultViewport: chromium.defaultViewport,
-            executablePath: isDev
-                ? process.env.CHROME_PATH || 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
-                : await chromium.executablePath(),
-            headless: chromium.headless,
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-gpu',
+                '--window-size=1280,800'
+            ],
+            defaultViewport: { width: 1280, height: 800 },
+            executablePath: executablePath,
+            headless: 'new', // Use new headless mode
             ignoreHTTPSErrors: true,
         });
 
